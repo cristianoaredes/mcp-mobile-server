@@ -1,0 +1,60 @@
+# Node / TypeScript
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+logs
+
+# Tests & Coverage
+coverage/
+.nyc_output/
+.vitest/
+
+# Environment files (keep examples tracked)
+.env
+.env.*
+!.env.example
+
+# Package managers (prefer npm)
+yarn.lock
+pnpm-lock.yaml
+
+# Editors / IDEs
+.vscode/
+.idea/
+.history/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Caches / temp
+.eslintcache
+.prettiercache
+tmp/
+temp/
+*.swp
+*.swo
+
+# Archives from npm pack
+*.tgz
+
+# Mobile artifacts (avoid committing large binaries)
+*.apk
+*.aab
+*.ipa
+
+# Certificates / keys (sensitive)
+*.keystore
+*.jks
+*.p12
+*.pem
+*.key
+*.mobileprovision
