@@ -2,8 +2,8 @@
   "summary": {
     "passed": 5,
     "failed": 0,
-    "skipped": 44,
-    "total": 49
+    "skipped": 48,
+    "total": 53
   },
   "results": [
     {
@@ -137,24 +137,44 @@
       "reason": "Required tool 'adb' not available"
     },
     {
+      "name": "native_run_list_devices",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "native_run_install_app",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "native_run_run_app",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "native_run_device_info",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
       "name": "flutter_doctor",
       "status": "pass",
-      "duration": 8348
+      "duration": 21249
     },
     {
       "name": "flutter_version",
       "status": "pass",
-      "duration": 140
+      "duration": 1536
     },
     {
       "name": "flutter_list_devices",
       "status": "pass",
-      "duration": 6688
+      "duration": 13317
     },
     {
       "name": "flutter_list_emulators",
       "status": "pass",
-      "duration": 610
+      "duration": 1744
     },
     {
       "name": "flutter_launch_emulator",
@@ -204,7 +224,7 @@
     {
       "name": "ios_list_simulators",
       "status": "pass",
-      "duration": 134
+      "duration": 644
     },
     {
       "name": "ios_boot_simulator",
@@ -252,5 +272,5 @@
       "reason": "No safe test arguments available"
     }
   ],
-  "timestamp": "2025-08-27T00:55:12.965Z"
+  "timestamp": "2025-08-27T16:30:27.698Z"
 }

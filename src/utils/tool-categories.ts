@@ -11,6 +11,7 @@ export enum ToolCategory {
 
 export enum RequiredTool {
   ADB = 'adb',
+  NATIVE_RUN = 'native-run',
   FLUTTER = 'flutter', 
   GRADLE = 'gradle',
   LINT = 'lint',
@@ -35,7 +36,17 @@ export interface ToolInfo {
 }
 
 export const TOOL_REGISTRY: Record<string, ToolInfo> = {
-  // ===== FLUTTER TOOLS (Working) =====
+  // ===== CORE TOOLS =====
+  'health_check': {
+    name: 'health_check',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'cross-platform',
+    requiredTools: [],
+    description: 'Check server health and tool availability',
+    safeForTesting: true,
+    performance: { expectedDuration: 1000, timeout: 10000 }
+  },
+
   'flutter_doctor': {
     name: 'flutter_doctor',
     category: ToolCategory.ESSENTIAL,
@@ -66,117 +77,45 @@ export const TOOL_REGISTRY: Record<string, ToolInfo> = {
     performance: { expectedDuration: 6000, timeout: 15000 }
   },
 
-  'flutter_list_emulators': {
-    name: 'flutter_list_emulators',
-    category: ToolCategory.ESSENTIAL,
-    platform: 'cross-platform',
-    requiredTools: [RequiredTool.FLUTTER],
-    description: 'List available emulators for Flutter',
-    safeForTesting: true,
-    performance: { expectedDuration: 600, timeout: 10000 }
-  },
-
-  // ===== iOS TOOLS (Working) =====
-  'ios_list_simulators': {
-    name: 'ios_list_simulators',
-    category: ToolCategory.ESSENTIAL,
-    platform: 'ios',
-    requiredTools: [RequiredTool.XCRUN],
-    description: 'List iOS simulators',
-    safeForTesting: true,
-    performance: { expectedDuration: 150, timeout: 10000 }
-  },
-
-  // ===== FLUTTER TOOLS (Dependent) =====
-  'flutter_create': {
-    name: 'flutter_create',
-    category: ToolCategory.DEPENDENT,
-    platform: 'flutter',
-    requiredTools: [RequiredTool.FLUTTER],
-    description: 'Create new Flutter project',
-    safeForTesting: false,
-    performance: { expectedDuration: 30000, timeout: 120000 }
-  },
-
-  'flutter_run': {
-    name: 'flutter_run',
-    category: ToolCategory.DEPENDENT,
-    platform: 'flutter',
-    requiredTools: [RequiredTool.FLUTTER],
-    description: 'Run Flutter app on connected device',
-    safeForTesting: false,
-    performance: { expectedDuration: 60000, timeout: 300000 }
-  },
-
-  'flutter_build': {
-    name: 'flutter_build',
-    category: ToolCategory.DEPENDENT,
-    platform: 'flutter',
-    requiredTools: [RequiredTool.FLUTTER],
-    description: 'Build Flutter app for release',
-    safeForTesting: false,
-    performance: { expectedDuration: 120000, timeout: 600000 }
-  },
-
-  'flutter_test': {
-    name: 'flutter_test',
-    category: ToolCategory.DEPENDENT,
-    platform: 'flutter',
-    requiredTools: [RequiredTool.FLUTTER],
-    description: 'Run Flutter tests',
-    safeForTesting: false,
-    performance: { expectedDuration: 30000, timeout: 120000 }
-  },
-
-  'flutter_clean': {
-    name: 'flutter_clean',
-    category: ToolCategory.DEPENDENT,
-    platform: 'flutter',
-    requiredTools: [RequiredTool.FLUTTER],
-    description: 'Clean Flutter project build artifacts',
-    safeForTesting: false,
-    performance: { expectedDuration: 10000, timeout: 60000 }
-  },
-
-  'flutter_pub_get': {
-    name: 'flutter_pub_get',
-    category: ToolCategory.DEPENDENT,
-    platform: 'flutter',
-    requiredTools: [RequiredTool.FLUTTER],
-    description: 'Get Flutter project dependencies',
-    safeForTesting: false,
-    performance: { expectedDuration: 15000, timeout: 120000 }
-  },
-
-  // ===== ANDROID TOOLS (Dependent - Need SDK) =====
   'android_list_devices': {
     name: 'android_list_devices',
     category: ToolCategory.ESSENTIAL,
     platform: 'android',
     requiredTools: [RequiredTool.ADB],
-    description: 'List connected Android devices',
+    description: 'List connected Android devices and emulators',
     safeForTesting: true,
     performance: { expectedDuration: 500, timeout: 10000 }
   },
 
-  'android_sdk_list_packages': {
-    name: 'android_sdk_list_packages',
+  // ===== DEVICE MANAGEMENT =====
+  'native_run_list_devices': {
+    name: 'native_run_list_devices',
     category: ToolCategory.ESSENTIAL,
-    platform: 'android',
-    requiredTools: [RequiredTool.SDKMANAGER],
-    description: 'List available Android SDK packages',
-    safeForTesting: true,
-    performance: { expectedDuration: 3000, timeout: 30000 }
-  },
-
-  'android_list_avds': {
-    name: 'android_list_avds',
-    category: ToolCategory.ESSENTIAL,
-    platform: 'android',
-    requiredTools: [RequiredTool.AVDMANAGER],
-    description: 'List Android Virtual Devices',
+    platform: 'cross-platform',
+    requiredTools: [RequiredTool.NATIVE_RUN],
+    description: 'List devices using native-run (Android & iOS)',
     safeForTesting: true,
     performance: { expectedDuration: 2000, timeout: 15000 }
+  },
+
+  'native_run_install_app': {
+    name: 'native_run_install_app',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'cross-platform',
+    requiredTools: [RequiredTool.NATIVE_RUN],
+    description: 'Install app using native-run (APK/iOS)',
+    safeForTesting: false,
+    performance: { expectedDuration: 20000, timeout: 120000 }
+  },
+
+  'ios_list_simulators': {
+    name: 'ios_list_simulators',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'ios',
+    requiredTools: [RequiredTool.XCRUN],
+    description: 'List available iOS simulators',
+    safeForTesting: true,
+    performance: { expectedDuration: 150, timeout: 10000 }
   },
 
   'android_list_emulators': {
@@ -189,121 +128,142 @@ export const TOOL_REGISTRY: Record<string, ToolInfo> = {
     performance: { expectedDuration: 1000, timeout: 15000 }
   },
 
-  'android_gradle_build': {
-    name: 'android_gradle_build',
-    category: ToolCategory.DEPENDENT,
+  // ===== EMULATOR MANAGEMENT (Added back) =====
+  'android_create_avd': {
+    name: 'android_create_avd',
+    category: ToolCategory.ESSENTIAL,
     platform: 'android',
-    requiredTools: [RequiredTool.GRADLE],
-    description: 'Build Android project with Gradle',
+    requiredTools: [RequiredTool.AVDMANAGER],
+    description: 'Create new Android Virtual Device',
+    safeForTesting: false,
+    performance: { expectedDuration: 5000, timeout: 60000 }
+  },
+
+  'android_start_emulator': {
+    name: 'android_start_emulator',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'android',
+    requiredTools: [RequiredTool.EMULATOR],
+    description: 'Start Android emulator',
+    safeForTesting: false,
+    performance: { expectedDuration: 60000, timeout: 180000 }
+  },
+
+  'android_stop_emulator': {
+    name: 'android_stop_emulator',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'android',
+    requiredTools: [RequiredTool.ADB],
+    description: 'Stop running Android emulator',
+    safeForTesting: false,
+    performance: { expectedDuration: 5000, timeout: 30000 }
+  },
+
+  'ios_shutdown_simulator': {
+    name: 'ios_shutdown_simulator',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'ios',
+    requiredTools: [RequiredTool.XCRUN],
+    description: 'Shutdown iOS simulator',
+    safeForTesting: false,
+    performance: { expectedDuration: 5000, timeout: 30000 }
+  },
+
+  'flutter_launch_emulator': {
+    name: 'flutter_launch_emulator',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'flutter',
+    requiredTools: [RequiredTool.FLUTTER],
+    description: 'Launch Flutter emulator',
+    safeForTesting: false,
+    performance: { expectedDuration: 60000, timeout: 180000 }
+  },
+
+  // ===== DEVELOPMENT WORKFLOW =====
+  'flutter_run': {
+    name: 'flutter_run',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'flutter',
+    requiredTools: [RequiredTool.FLUTTER],
+    description: 'Run Flutter app on connected device with hot reload',
+    safeForTesting: false,
+    performance: { expectedDuration: 60000, timeout: 300000 }
+  },
+
+  'flutter_build': {
+    name: 'flutter_build',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'flutter',
+    requiredTools: [RequiredTool.FLUTTER],
+    description: 'Build Flutter app for release',
     safeForTesting: false,
     performance: { expectedDuration: 120000, timeout: 600000 }
   },
 
-  'android_gradle_tasks': {
-    name: 'android_gradle_tasks',
-    category: ToolCategory.DEPENDENT,
-    platform: 'android',
-    requiredTools: [RequiredTool.GRADLE],
-    description: 'List available Gradle tasks',
-    safeForTesting: false,
-    performance: { expectedDuration: 5000, timeout: 30000 }
-  },
-
-  'android_gradle_clean': {
-    name: 'android_gradle_clean',
-    category: ToolCategory.DEPENDENT,
-    platform: 'android',
-    requiredTools: [RequiredTool.GRADLE],
-    description: 'Clean Android project build artifacts',
+  'flutter_test': {
+    name: 'flutter_test',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'flutter',
+    requiredTools: [RequiredTool.FLUTTER],
+    description: 'Run Flutter tests',
     safeForTesting: false,
     performance: { expectedDuration: 30000, timeout: 120000 }
   },
 
-  'android_gradle_dependencies': {
-    name: 'android_gradle_dependencies',
-    category: ToolCategory.DEPENDENT,
-    platform: 'android',
-    requiredTools: [RequiredTool.GRADLE],
-    description: 'Show Android project dependencies',
+  'flutter_clean': {
+    name: 'flutter_clean',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'flutter',
+    requiredTools: [RequiredTool.FLUTTER],
+    description: 'Clean Flutter project build artifacts',
     safeForTesting: false,
     performance: { expectedDuration: 10000, timeout: 60000 }
   },
 
-  'android_lint_check': {
-    name: 'android_lint_check',
-    category: ToolCategory.OPTIONAL,
-    platform: 'android',
-    requiredTools: [RequiredTool.LINT],
-    description: 'Run Android Lint checks',
-    safeForTesting: false,
-    performance: { expectedDuration: 30000, timeout: 180000 }
-  },
-
-  'android_lint_explain': {
-    name: 'android_lint_explain',
-    category: ToolCategory.OPTIONAL,
-    platform: 'android',
-    requiredTools: [RequiredTool.LINT],
-    description: 'Explain Android Lint issue',
-    safeForTesting: false,
-    performance: { expectedDuration: 1000, timeout: 10000 }
-  },
-
-  'android_lint_baseline': {
-    name: 'android_lint_baseline',
-    category: ToolCategory.OPTIONAL,
-    platform: 'android',
-    requiredTools: [RequiredTool.LINT],
-    description: 'Generate Android Lint baseline',
-    safeForTesting: false,
-    performance: { expectedDuration: 30000, timeout: 180000 }
-  },
-
-  'android_lint_list_checks': {
-    name: 'android_lint_list_checks',
-    category: ToolCategory.OPTIONAL,
-    platform: 'android',
-    requiredTools: [RequiredTool.LINT],
-    description: 'List available Android Lint checks',
-    safeForTesting: true,
-    performance: { expectedDuration: 2000, timeout: 15000 }
-  },
-
-  // ===== ANDROID TOOLS (Device Operations) =====
-  'android_install_apk': {
-    name: 'android_install_apk',
-    category: ToolCategory.DEPENDENT,
-    platform: 'android',
-    requiredTools: [RequiredTool.ADB],
-    description: 'Install APK on Android device',
+  'flutter_pub_get': {
+    name: 'flutter_pub_get',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'flutter',
+    requiredTools: [RequiredTool.FLUTTER],
+    description: 'Install Flutter project dependencies',
     safeForTesting: false,
     performance: { expectedDuration: 15000, timeout: 120000 }
   },
 
-  'android_screenshot': {
-    name: 'android_screenshot',
-    category: ToolCategory.OPTIONAL,
+  'android_install_apk': {
+    name: 'android_install_apk',
+    category: ToolCategory.ESSENTIAL,
     platform: 'android',
     requiredTools: [RequiredTool.ADB],
-    description: 'Capture Android device screenshot',
+    description: 'Install APK on Android device or emulator',
+    safeForTesting: false,
+    performance: { expectedDuration: 15000, timeout: 120000 }
+  },
+
+  // ===== UTILITY TOOLS =====
+  'android_logcat': {
+    name: 'android_logcat',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'android',
+    requiredTools: [RequiredTool.ADB],
+    description: 'Capture Android logcat output for debugging',
+    safeForTesting: false,
+    performance: { expectedDuration: 0, timeout: 60000 } // Variable duration
+  },
+
+  'android_screenshot': {
+    name: 'android_screenshot',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'android',
+    requiredTools: [RequiredTool.ADB],
+    description: 'Capture screenshot from Android device',
     safeForTesting: false,
     performance: { expectedDuration: 5000, timeout: 30000 }
   },
 
-  'android_screen_record': {
-    name: 'android_screen_record',
-    category: ToolCategory.OPTIONAL,
-    platform: 'android',
-    requiredTools: [RequiredTool.ADB],
-    description: 'Record Android device screen',
-    safeForTesting: false,
-    performance: { expectedDuration: 0, timeout: 300000 } // Variable duration
-  },
-
-  // ===== iOS TOOLS (Dependent) =====
   'ios_boot_simulator': {
     name: 'ios_boot_simulator',
-    category: ToolCategory.DEPENDENT,
+    category: ToolCategory.ESSENTIAL,
     platform: 'ios',
     requiredTools: [RequiredTool.XCRUN],
     description: 'Boot iOS simulator',
@@ -311,25 +271,116 @@ export const TOOL_REGISTRY: Record<string, ToolInfo> = {
     performance: { expectedDuration: 30000, timeout: 120000 }
   },
 
-  'ios_build_project': {
-    name: 'ios_build_project',
-    category: ToolCategory.DEPENDENT,
+  'ios_take_screenshot': {
+    name: 'ios_take_screenshot',
+    category: ToolCategory.ESSENTIAL,
     platform: 'ios',
-    requiredTools: [RequiredTool.XCODEBUILD],
-    description: 'Build iOS project with Xcode',
+    requiredTools: [RequiredTool.XCRUN],
+    description: 'Take screenshot of iOS simulator',
+    safeForTesting: false,
+    performance: { expectedDuration: 3000, timeout: 20000 }
+  },
+
+  // ===== SUPER TOOLS - COMBINED WORKFLOWS =====
+  'flutter_dev_session': {
+    name: 'flutter_dev_session',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'flutter',
+    requiredTools: [RequiredTool.FLUTTER],
+    description: 'Complete Flutter dev setup: check env, list devices, select best device, run with hot reload',
+    safeForTesting: false,
+    performance: { expectedDuration: 90000, timeout: 300000 }
+  },
+
+  'flutter_test_suite': {
+    name: 'flutter_test_suite',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'flutter',
+    requiredTools: [RequiredTool.FLUTTER],
+    description: 'Run complete test suite: unit tests, widget tests, integration tests with coverage report',
     safeForTesting: false,
     performance: { expectedDuration: 120000, timeout: 600000 }
   },
 
-  'ios_run_tests': {
-    name: 'ios_run_tests',
-    category: ToolCategory.DEPENDENT,
-    platform: 'ios',
-    requiredTools: [RequiredTool.XCODEBUILD],
-    description: 'Run iOS unit tests',
+  'flutter_release_build': {
+    name: 'flutter_release_build',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'flutter',
+    requiredTools: [RequiredTool.FLUTTER, RequiredTool.GRADLE, RequiredTool.XCODEBUILD],
+    description: 'Build release versions for all platforms: APK, AAB, IPA with signing',
+    safeForTesting: false,
+    performance: { expectedDuration: 300000, timeout: 1200000 }
+  },
+
+  'mobile_device_manager': {
+    name: 'mobile_device_manager',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'cross-platform',
+    requiredTools: [RequiredTool.FLUTTER],
+    description: 'Smart device management: list all, recommend best, auto-start if needed',
+    safeForTesting: false,
+    performance: { expectedDuration: 30000, timeout: 180000 }
+  },
+
+  'flutter_performance_profile': {
+    name: 'flutter_performance_profile',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'flutter',
+    requiredTools: [RequiredTool.FLUTTER],
+    description: 'Run app in profile mode with DevTools: CPU, memory, network, timeline analysis',
+    safeForTesting: false,
+    performance: { expectedDuration: 120000, timeout: 600000 }
+  },
+
+  'flutter_deploy_pipeline': {
+    name: 'flutter_deploy_pipeline',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'flutter',
+    requiredTools: [RequiredTool.FLUTTER],
+    description: 'Complete deployment: clean, test, build, generate changelog, prepare for store submission',
+    safeForTesting: false,
+    performance: { expectedDuration: 600000, timeout: 1800000 }
+  },
+
+  'flutter_fix_common_issues': {
+    name: 'flutter_fix_common_issues',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'flutter',
+    requiredTools: [RequiredTool.FLUTTER],
+    description: 'Auto-fix common issues: clean, pub get, pod install, gradle sync, invalidate caches',
     safeForTesting: false,
     performance: { expectedDuration: 60000, timeout: 300000 }
   },
+
+  'android_full_debug': {
+    name: 'android_full_debug',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'android',
+    requiredTools: [RequiredTool.ADB],
+    description: 'Complete Android debugging: logcat, screenshot, system info, app permissions',
+    safeForTesting: false,
+    performance: { expectedDuration: 30000, timeout: 120000 }
+  },
+
+  'ios_simulator_manager': {
+    name: 'ios_simulator_manager',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'ios',
+    requiredTools: [RequiredTool.XCRUN],
+    description: 'Smart iOS simulator management: list, recommend, boot, configure, clean state',
+    safeForTesting: false,
+    performance: { expectedDuration: 45000, timeout: 180000 }
+  },
+
+  'flutter_inspector_session': {
+    name: 'flutter_inspector_session',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'flutter',
+    requiredTools: [RequiredTool.FLUTTER],
+    description: 'Launch app with Flutter Inspector: widget tree, render tree, performance overlay',
+    safeForTesting: false,
+    performance: { expectedDuration: 60000, timeout: 300000 }
+  }
 };
 
 /**

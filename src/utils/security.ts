@@ -12,6 +12,8 @@ export const DEFAULT_SECURITY_CONFIG: SecurityConfig = {
     'gradlew',
     'gradlew.bat',
     'lint',
+    // Cross-platform alternatives
+    'native-run',
     // iOS
     'xcrun',
     'xcodebuild',
@@ -199,7 +201,7 @@ export async function validateEnvironment() {
   const { promisify } = await import('util');
   const execAsync = promisify(exec);
 
-  const tools = ['adb', 'flutter', 'node'];
+  const tools = ['adb', 'flutter', 'node', 'native-run', 'gradle', 'lint'];
   const toolStatus: Record<string, boolean> = {};
 
   // Check platform-specific tools
