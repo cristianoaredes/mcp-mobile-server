@@ -14,6 +14,7 @@ import { createAndroidTools } from './tools/android.js';
 import { createIOSTools } from './tools/ios.js';
 import { createFlutterTools } from './tools/flutter.js';
 import { createSuperTools } from './tools/super-tools.js';
+import { createSetupTools } from './tools/setup-tools.js';
 
 // Global process tracking
 const globalProcessMap = new Map<string, number>();
@@ -38,13 +39,15 @@ async function registerTools() {
   const iosTools = createIOSTools(globalProcessMap);
   const flutterTools = createFlutterTools(globalProcessMap);
   const superTools = createSuperTools(globalProcessMap);
+  const setupTools = createSetupTools(globalProcessMap);
 
   // Combine all tool sources
   const allAvailableTools = new Map<string, any>([
     ...androidTools.entries(),
     ...iosTools.entries(),
     ...flutterTools.entries(),
-    ...superTools.entries()
+    ...superTools.entries(),
+    ...setupTools.entries()
   ]);
 
   // Only register tools that are in TOOL_REGISTRY

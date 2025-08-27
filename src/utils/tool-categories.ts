@@ -380,6 +380,27 @@ export const TOOL_REGISTRY: Record<string, ToolInfo> = {
     description: 'Launch app with Flutter Inspector: widget tree, render tree, performance overlay',
     safeForTesting: false,
     performance: { expectedDuration: 60000, timeout: 300000 }
+  },
+
+  // ===== SETUP & CONFIGURATION TOOLS =====
+  'flutter_setup_environment': {
+    name: 'flutter_setup_environment',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'cross-platform',
+    requiredTools: [],
+    description: 'Complete Flutter SDK installation and environment setup with automatic path configuration',
+    safeForTesting: true,
+    performance: { expectedDuration: 5000, timeout: 600000 }
+  },
+
+  'android_sdk_setup': {
+    name: 'android_sdk_setup',
+    category: ToolCategory.ESSENTIAL,
+    platform: 'android',
+    requiredTools: [],
+    description: 'Setup Android SDK and configure environment for Android development',
+    safeForTesting: true,
+    performance: { expectedDuration: 5000, timeout: 600000 }
   }
 };
 
