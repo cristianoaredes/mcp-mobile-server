@@ -6,11 +6,14 @@ import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprot
 import { z } from 'zod';
 import { processExecutor } from './utils/process.js';
 import { validateEnvironment } from './utils/security.js';
+import { generateHealthCheckReport, TOOL_REGISTRY, RequiredTool, ToolCategory } from './utils/tool-categories.js';
+import { fallbackManager } from './utils/fallbacks.js';
 
 // Import tool handlers
 import { createAndroidTools } from './tools/android.js';
 import { createIOSTools } from './tools/ios.js';
 import { createFlutterTools } from './tools/flutter.js';
+import { createSuperTools } from './tools/super-tools.js';
 
 // Global process tracking
 const globalProcessMap = new Map<string, number>();
@@ -27,53 +30,122 @@ const tools = new Map<string, any>();
 
 /**
  * Register all MCP tools
+ * Only registers tools that are defined in TOOL_REGISTRY
  */
 async function registerTools() {
   // Create tool handlers with shared process map
   const androidTools = createAndroidTools(globalProcessMap);
   const iosTools = createIOSTools(globalProcessMap);
   const flutterTools = createFlutterTools(globalProcessMap);
+  const superTools = createSuperTools(globalProcessMap);
 
-  // Register Android tools
-  for (const [name, tool] of androidTools.entries()) {
-    tools.set(name, tool);
-  }
+  // Combine all tool sources
+  const allAvailableTools = new Map<string, any>([
+    ...androidTools.entries(),
+    ...iosTools.entries(),
+    ...flutterTools.entries(),
+    ...superTools.entries()
+  ]);
 
-  // Register iOS tools
-  for (const [name, tool] of iosTools.entries()) {
-    tools.set(name, tool);
-  }
-
-  // Register Flutter tools
-  for (const [name, tool] of flutterTools.entries()) {
-    tools.set(name, tool);
+  // Only register tools that are in TOOL_REGISTRY
+  for (const toolName of Object.keys(TOOL_REGISTRY)) {
+    if (allAvailableTools.has(toolName)) {
+      tools.set(toolName, allAvailableTools.get(toolName));
+    } else if (toolName === 'health_check') {
+      // health_check is handled separately below
+      continue;
+    } else {
+      // Tool is in registry but not implemented - log warning
+      console.warn(`Warning: Tool '${toolName}' is in TOOL_REGISTRY but not implemented`);
+    }
   }
 
   // Register health check tool
   tools.set('health_check', {
     name: 'health_check',
-    description: 'Check server health and tool availability',
+    description: 'Check server health, tool availability and environment status',
     inputSchema: {
       type: 'object',
-      properties: {},
+      properties: {
+        verbose: {
+          type: 'boolean',
+          description: 'Include detailed tool analysis and recommendations'
+        }
+      },
       required: []
     },
-    handler: async () => {
+    handler: async (args: any) => {
       const env = await validateEnvironment();
-      return {
+      const verbose = args?.verbose || false;
+      
+      // Convert env.availableTools to match RequiredTool enum format
+      const toolAvailability: Record<string, boolean> = {};
+      for (const [toolName, isAvailable] of Object.entries(env.availableTools)) {
+        // Map common tool names to RequiredTool enum values
+        const mappedToolName = toolName === 'native-run' ? RequiredTool.NATIVE_RUN : 
+                               toolName === 'adb' ? RequiredTool.ADB :
+                               toolName === 'flutter' ? RequiredTool.FLUTTER :
+                               toolName === 'xcrun' ? RequiredTool.XCRUN :
+                               toolName === 'xcodebuild' ? RequiredTool.XCODEBUILD :
+                               toolName as RequiredTool;
+        toolAvailability[mappedToolName] = isAvailable as boolean;
+      }
+      
+      const healthReport = generateHealthCheckReport(toolAvailability);
+      
+      const baseHealth = {
         success: true,
         data: {
           server: 'mcp-mobile-server',
           version: '1.0.0',
           status: 'healthy',
           timestamp: new Date().toISOString(),
+          registeredTools: tools.size,
           environment: env,
+          toolHealth: {
+            totalAvailable: healthReport.totalTools,
+            expectedWorking: healthReport.expectedWorkingTools,
+            safeForTesting: healthReport.safeForTesting,
+            byCategory: healthReport.categoryCounts,
+            byPlatform: healthReport.platformCounts,
+          },
           activeProcesses: Array.from(globalProcessMap.entries()).map(([key, pid]) => ({
             key,
             pid
           }))
         }
       };
+
+      if (verbose) {
+        // Add detailed analysis
+        const workingTools = Object.entries(TOOL_REGISTRY).filter(([_, toolInfo]) => {
+          return toolInfo.requiredTools.every(req => toolAvailability[req]);
+        });
+
+        const brokenTools = Object.entries(TOOL_REGISTRY).filter(([_, toolInfo]) => {
+          return !toolInfo.requiredTools.every(req => toolAvailability[req]);
+        });
+
+        (baseHealth.data as any).detailedAnalysis = {
+          workingTools: workingTools.map(([name, info]) => ({
+            name,
+            category: info.category,
+            platform: info.platform,
+            description: info.description,
+            safeForTesting: info.safeForTesting
+          })),
+          brokenTools: brokenTools.map(([name, info]) => ({
+            name,
+            category: info.category,
+            platform: info.platform,
+            description: info.description,
+            missingRequirements: info.requiredTools.filter(req => !toolAvailability[req])
+          })),
+          recommendations: await fallbackManager.generateFallbackRecommendations()
+        };
+      }
+
+      return baseHealth;
     }
   });
 

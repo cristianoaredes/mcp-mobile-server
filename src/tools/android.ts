@@ -1,11 +1,13 @@
 import { z } from 'zod';
 import { processExecutor } from '../utils/process.js';
+import { fallbackManager } from '../utils/fallbacks.js';
 import path from 'path';
 import fs from 'fs/promises';
 import { spawn } from 'child_process';
 import { createAndroidGradleTools } from './android/gradle.js';
 import { createAndroidLintTools } from './android/lint.js';
 import { createAndroidMediaTools } from './android/media.js';
+import { createNativeRunTools } from './android/native-run.js';
 
 // Process tracking for emulators per tool instance
 let runningEmulators: Map<string, number>;
@@ -506,18 +508,23 @@ export function createAndroidTools(globalProcessMap: Map<string, number>): Map<s
   // Android ADB - List devices
   tools.set('android_list_devices', {
     name: 'android_list_devices',
-    description: 'List connected Android devices and emulators via ADB',
+    description: 'List connected Android devices and emulators (supports ADB fallback to native-run)',
     inputSchema: {
       type: 'object',
       properties: {},
       required: []
     },
     handler: async () => {
-      const result = await processExecutor.execute('adb', ['devices', '-l']);
+      const fallbackResult = await fallbackManager.executeAdbWithFallback(
+        ['devices', '-l'],
+        { platform: 'android' }
+      );
 
-      if (result.exitCode !== 0) {
-        throw new Error(`ADB devices listing failed: ${result.stderr}`);
+      if (!fallbackResult.success) {
+        throw new Error(fallbackResult.error || 'Failed to list devices');
       }
+
+      const result = fallbackResult.data;
 
       // Parse adb devices output
       const devices = [];
@@ -562,6 +569,11 @@ export function createAndroidTools(globalProcessMap: Map<string, number>): Map<s
           devices,
           totalCount: devices.length,
           onlineCount: devices.filter(d => d.state === 'device').length,
+          fallbackInfo: fallbackResult.usedFallback ? {
+            usedFallback: true,
+            fallbackTool: fallbackResult.fallbackTool,
+            message: fallbackResult.message
+          } : undefined
         },
       };
     }
@@ -790,6 +802,7 @@ export function createAndroidTools(globalProcessMap: Map<string, number>): Map<s
   const gradleTools = createAndroidGradleTools();
   const lintTools = createAndroidLintTools();  
   const mediaTools = createAndroidMediaTools();
+  const nativeRunTools = createNativeRunTools();
 
   // Merge all tools
   for (const [name, tool] of gradleTools.entries()) {
@@ -801,6 +814,10 @@ export function createAndroidTools(globalProcessMap: Map<string, number>): Map<s
   }
   
   for (const [name, tool] of mediaTools.entries()) {
+    tools.set(name, tool);
+  }
+
+  for (const [name, tool] of nativeRunTools.entries()) {
     tools.set(name, tool);
   }
 
