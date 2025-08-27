@@ -1,0 +1,256 @@
+{
+  "summary": {
+    "passed": 5,
+    "failed": 0,
+    "skipped": 44,
+    "total": 49
+  },
+  "results": [
+    {
+      "name": "android_sdk_list_packages",
+      "status": "skip",
+      "reason": "Required tool 'sdkmanager' not available"
+    },
+    {
+      "name": "android_sdk_install_packages",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "android_list_avds",
+      "status": "skip",
+      "reason": "Required tool 'avdmanager' not available"
+    },
+    {
+      "name": "android_create_avd",
+      "status": "skip",
+      "reason": "Required tool 'avdmanager' not available"
+    },
+    {
+      "name": "android_delete_avd",
+      "status": "skip",
+      "reason": "Required tool 'avdmanager' not available"
+    },
+    {
+      "name": "android_list_emulators",
+      "status": "skip",
+      "reason": "Required tool 'emulator' not available"
+    },
+    {
+      "name": "android_start_emulator",
+      "status": "skip",
+      "reason": "Required tool 'emulator' not available"
+    },
+    {
+      "name": "android_stop_emulator",
+      "status": "skip",
+      "reason": "Required tool 'adb' not available"
+    },
+    {
+      "name": "android_list_devices",
+      "status": "skip",
+      "reason": "Required tool 'adb' not available"
+    },
+    {
+      "name": "android_install_apk",
+      "status": "skip",
+      "reason": "Required tool 'adb' not available"
+    },
+    {
+      "name": "android_uninstall_package",
+      "status": "skip",
+      "reason": "Required tool 'adb' not available"
+    },
+    {
+      "name": "android_shell_command",
+      "status": "skip",
+      "reason": "Required tool 'adb' not available"
+    },
+    {
+      "name": "android_logcat",
+      "status": "skip",
+      "reason": "Required tool 'adb' not available"
+    },
+    {
+      "name": "android_gradle_build",
+      "status": "skip",
+      "reason": "Required tool 'gradle' not available"
+    },
+    {
+      "name": "android_gradle_tasks",
+      "status": "skip",
+      "reason": "Required tool 'gradle' not available"
+    },
+    {
+      "name": "android_gradle_clean",
+      "status": "skip",
+      "reason": "Required tool 'gradle' not available"
+    },
+    {
+      "name": "android_gradle_dependencies",
+      "status": "skip",
+      "reason": "Required tool 'gradle' not available"
+    },
+    {
+      "name": "android_lint_check",
+      "status": "skip",
+      "reason": "Required tool 'lint' not available"
+    },
+    {
+      "name": "android_lint_explain",
+      "status": "skip",
+      "reason": "Required tool 'lint' not available"
+    },
+    {
+      "name": "android_lint_baseline",
+      "status": "skip",
+      "reason": "Required tool 'lint' not available"
+    },
+    {
+      "name": "android_lint_list_checks",
+      "status": "skip",
+      "reason": "Required tool 'lint' not available"
+    },
+    {
+      "name": "android_screenshot",
+      "status": "skip",
+      "reason": "Required tool 'adb' not available"
+    },
+    {
+      "name": "android_screen_record",
+      "status": "skip",
+      "reason": "Required tool 'adb' not available"
+    },
+    {
+      "name": "android_screen_record_stop",
+      "status": "skip",
+      "reason": "Required tool 'adb' not available"
+    },
+    {
+      "name": "android_push_file",
+      "status": "skip",
+      "reason": "Required tool 'adb' not available"
+    },
+    {
+      "name": "android_pull_file",
+      "status": "skip",
+      "reason": "Required tool 'adb' not available"
+    },
+    {
+      "name": "flutter_doctor",
+      "status": "pass",
+      "duration": 8348
+    },
+    {
+      "name": "flutter_version",
+      "status": "pass",
+      "duration": 140
+    },
+    {
+      "name": "flutter_list_devices",
+      "status": "pass",
+      "duration": 6688
+    },
+    {
+      "name": "flutter_list_emulators",
+      "status": "pass",
+      "duration": 610
+    },
+    {
+      "name": "flutter_launch_emulator",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "flutter_run",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "flutter_stop_session",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "flutter_list_sessions",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "flutter_build",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "flutter_test",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "flutter_clean",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "flutter_pub_get",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "flutter_screenshot",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "ios_list_simulators",
+      "status": "pass",
+      "duration": 134
+    },
+    {
+      "name": "ios_boot_simulator",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "ios_shutdown_simulator",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "ios_erase_simulator",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "ios_open_url",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "ios_take_screenshot",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "ios_record_video",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "ios_list_schemes",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "ios_build_project",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    },
+    {
+      "name": "ios_run_tests",
+      "status": "skip",
+      "reason": "No safe test arguments available"
+    }
+  ],
+  "timestamp": "2025-08-27T00:55:12.965Z"
+}
