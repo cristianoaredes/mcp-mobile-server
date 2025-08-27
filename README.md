@@ -2,12 +2,17 @@
 
 <div align="center">
 
+[![NPM Version](https://img.shields.io/npm/v/@cristianoaredes/mcp-mobile-server.svg?style=for-the-badge)](https://www.npmjs.com/package/@cristianoaredes/mcp-mobile-server)
 [![MCP](https://img.shields.io/badge/MCP-Native_Server-blue?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Im0xMiAzLTEuOSA3aDQuMnptMCAwdjE4bDggNS4yLTEyIDEuOXoiLz48L3N2Zz4=)](https://modelcontextprotocol.io)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green?style=for-the-badge&logo=node.js)](https://nodejs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3+-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org)
 [![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](./LICENSE)
 
 **Native MCP Server for Mobile Development**
+
+A comprehensive **Model Context Protocol (MCP) Server** with **50+ tools** for Android, iOS, and Flutter development.
+
+</div>
 
 *Complete automation toolkit for Android, iOS, and Flutter development through the Model Context Protocol*
 
@@ -46,6 +51,32 @@ The **MCP Mobile Server** is a comprehensive native Model Context Protocol serve
 ---
 
 ## 🚀 **Quick Start**
+
+### **NPX Usage (Recommended)**
+
+```bash
+# Run directly with npx - no installation required
+npx @cristianoaredes/mcp-mobile-server
+
+# Or install globally 
+npm install -g @cristianoaredes/mcp-mobile-server
+mcp-mobile-server
+```
+
+### **Claude Desktop Integration**
+
+Add to your `claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "mobile-dev": {
+      "command": "npx",
+      "args": ["@cristianoaredes/mcp-mobile-server"]
+    }
+  }
+}
+```
 
 ### **Prerequisites**
 

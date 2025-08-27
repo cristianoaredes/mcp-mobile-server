@@ -1,5 +1,5 @@
 {
-  "name": "mcp-mobile-server",
+  "name": "@cristianoaredes/mcp-mobile-server",
   "version": "1.0.0",
   "description": "Native MCP Server for Mobile Development (Android, iOS, Flutter)",
   "type": "module",
@@ -11,10 +11,17 @@
     "build": "tsc",
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
+    "validate": "tsx scripts/validate-tools.ts",
     "mcp:validate": "node dist/server.js validate",
     "test": "vitest",
-    "lint": "eslint src --ext .ts",
-    "format": "prettier --write src/**/*.ts"
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:e2e": "vitest run tests/e2e",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src tests --ext .ts",
+    "format": "prettier --write src/**/*.ts tests/**/*.ts",
+    "ci": "npm run lint && npm run build && npm run test:unit && npm run test:integration"
   },
   "keywords": ["mcp", "mobile", "android", "ios", "flutter", "development", "cli"],
   "author": "MCP Mobile Server Contributors",
@@ -26,6 +33,9 @@
   "homepage": "https://github.com/cristianoaredes/mcp-mobile-server#readme",
   "bugs": {
     "url": "https://github.com/cristianoaredes/mcp-mobile-server/issues"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.4.0",

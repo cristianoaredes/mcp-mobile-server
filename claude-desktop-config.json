@@ -3,7 +3,6 @@
     "mobile-dev": {
       "command": "node",
       "args": ["./dist/server.js"],
-      "cwd": "/Users/cristianocosta/workspace/clientes/bancomaster/workspace/bm-dev-tools/mcp-mobile-server",
       "env": {
         "NODE_ENV": "production"
       }

@@ -3,6 +3,9 @@ import { processExecutor } from '../utils/process.js';
 import path from 'path';
 import fs from 'fs/promises';
 import { spawn } from 'child_process';
+import { createAndroidGradleTools } from './android/gradle.js';
+import { createAndroidLintTools } from './android/lint.js';
+import { createAndroidMediaTools } from './android/media.js';
 
 // Process tracking for emulators per tool instance
 let runningEmulators: Map<string, number>;
@@ -782,6 +785,24 @@ export function createAndroidTools(globalProcessMap: Map<string, number>): Map<s
       };
     }
   });
+
+  // Add new Android tools
+  const gradleTools = createAndroidGradleTools();
+  const lintTools = createAndroidLintTools();  
+  const mediaTools = createAndroidMediaTools();
+
+  // Merge all tools
+  for (const [name, tool] of gradleTools.entries()) {
+    tools.set(name, tool);
+  }
+  
+  for (const [name, tool] of lintTools.entries()) {
+    tools.set(name, tool);
+  }
+  
+  for (const [name, tool] of mediaTools.entries()) {
+    tools.set(name, tool);
+  }
 
   return tools;
 }

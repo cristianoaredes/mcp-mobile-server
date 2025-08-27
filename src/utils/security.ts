@@ -8,6 +8,10 @@ export const DEFAULT_SECURITY_CONFIG: SecurityConfig = {
     'sdkmanager',
     'avdmanager', 
     'emulator',
+    'gradle',
+    'gradlew',
+    'gradlew.bat',
+    'lint',
     // iOS
     'xcrun',
     'xcodebuild',
@@ -120,7 +124,7 @@ export class SecurityValidator {
   }
 
   private validateFlutterCommand(args: string[]): void {
-    // Allow only safe flutter commands
+    // Allow only safe flutter commands and flags
     const safeFlutterCommands = [
       'doctor',
       'devices',
@@ -134,9 +138,29 @@ export class SecurityValidator {
       'analyze',
     ];
 
+    const safeFlutterFlags = [
+      '--version',
+      '--machine',
+      '--verbose',
+      '--no-version-check',
+      '--suppress-analytics',
+    ];
+
     if (args.length === 0) return;
 
     const subCommand = args[0];
+    
+    if (!subCommand) return;
+    
+    // Allow flags directly
+    if (subCommand.startsWith('--')) {
+      if (!safeFlutterFlags.includes(subCommand)) {
+        throw new Error(`Flutter flag '${subCommand}' is not allowed`);
+      }
+      return;
+    }
+    
+    // Allow safe subcommands
     if (subCommand && !safeFlutterCommands.includes(subCommand)) {
       throw new Error(`Flutter subcommand '${subCommand}' is not allowed`);
     }

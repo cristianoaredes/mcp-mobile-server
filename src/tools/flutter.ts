@@ -232,19 +232,21 @@ export function createFlutterTools(globalProcessMap: Map<string, number>): Map<s
       required: []
     },
     handler: async () => {
-      const result = await processExecutor.execute('flutter', ['emulators', '--machine']);
+      const result = await processExecutor.execute('flutter', ['emulators']);
       
       if (result.exitCode !== 0) {
         throw new Error(`Failed to list Flutter emulators: ${result.stderr}`);
       }
 
-      // Parse JSON output
-      let emulators = [];
-      try {
-        emulators = JSON.parse(result.stdout);
-      } catch (parseError) {
-        throw new Error(`Failed to parse emulators output: ${parseError}`);
-      }
+      // Parse text output (emulators command doesn't support --machine flag)
+      const emulators = result.stdout
+        .split('\n')
+        .filter((line: string) => line.trim() && !line.includes('No emulators available'))
+        .map((line: string, index: number) => ({
+          id: `emulator_${index}`,
+          name: line.trim(),
+          available: true
+        }));
 
       return {
         success: true,
