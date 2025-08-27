@@ -1,7 +1,7 @@
 {
   "name": "@cristianoaredes/mcp-mobile-server",
-  "version": "2.1.0",
-  "description": "Native MCP Server for Mobile Development with 34 tools including 10 intelligent super-tools for complete workflows (Android, iOS, Flutter)",
+  "version": "2.3.0",
+  "description": "Native MCP Server for Mobile Development with 36 tools including Flutter/Android SDK automated setup and 10 intelligent super-tools (Android, iOS, Flutter)",
   "type": "module",
   "main": "dist/server.js",
   "bin": {
