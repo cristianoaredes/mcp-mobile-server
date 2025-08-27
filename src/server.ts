@@ -16,24 +16,31 @@ import { createFlutterTools } from './tools/flutter.js';
 import { createSuperTools } from './tools/super-tools.js';
 import { createSetupTools } from './tools/setup-tools.js';
 
+// Configuration schema for Smithery
+export const configSchema = z.object({
+  // Optional configuration - this server doesn't require any config for basic operation
+}).optional();
+
 // Global process tracking
 const globalProcessMap = new Map<string, number>();
 
-const server = new Server(
-  {
-    name: 'mcp-mobile-server',
-    version: '1.0.0',
-  }
-);
-
-// Tool registry
-const tools = new Map<string, any>();
-
 /**
- * Register all MCP tools
- * Only registers tools that are defined in TOOL_REGISTRY
+ * Create and configure MCP server - Required export for Smithery
  */
-async function registerTools() {
+export default function createServer({ config }: { config?: any } = {}) {
+  const server = new Server({
+    name: 'mcp-mobile-server',
+    version: '2.3.0',
+  });
+
+  // Tool registry
+  const tools = new Map<string, any>();
+
+  /**
+   * Register all MCP tools
+   * Only registers tools that are defined in TOOL_REGISTRY
+   */
+  async function registerTools() {
   // Create tool handlers with shared process map
   const androidTools = createAndroidTools(globalProcessMap);
   const iosTools = createIOSTools(globalProcessMap);
@@ -152,90 +159,76 @@ async function registerTools() {
     }
   });
 
-  console.log(`Registered ${tools.size} MCP tools`);
+    console.log(`Registered ${tools.size} MCP tools`);
+  }
+
+  /**
+   * List tools handler
+   */
+  server.setRequestHandler(ListToolsRequestSchema, async () => {
+    const toolList = Array.from(tools.values()).map(tool => ({
+      name: tool.name,
+      description: tool.description,
+      inputSchema: tool.inputSchema,
+    }));
+
+    return { tools: toolList };
+  });
+
+  /**
+   * Call tool handler
+   */
+  server.setRequestHandler(CallToolRequestSchema, async (request: any) => {
+    const { name, arguments: args } = request.params;
+    
+    const tool = tools.get(name);
+    if (!tool) {
+      throw new Error(`Tool "${name}" not found`);
+    }
+
+    console.log(`Executing tool: ${name}`, args);
+
+    try {
+      const result = await tool.handler(args || {});
+      
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify(result, null, 2),
+          },
+        ],
+      };
+    } catch (error: any) {
+      console.error(`Tool execution failed: ${name}`, error);
+      
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              success: false,
+              error: {
+                code: 'TOOL_EXECUTION_ERROR',
+                message: error.message,
+                details: error.stack,
+              },
+            }, null, 2),
+          },
+        ],
+        isError: true,
+      };
+    }
+  });
+
+  // Initialize tools on server creation
+  registerTools().catch(console.error);
+
+  return server;
 }
 
 /**
- * List tools handler
- */
-server.setRequestHandler(ListToolsRequestSchema, async () => {
-  const toolList = Array.from(tools.values()).map(tool => ({
-    name: tool.name,
-    description: tool.description,
-    inputSchema: tool.inputSchema,
-  }));
-
-  return { tools: toolList };
-});
-
-/**
- * Call tool handler
- */
-server.setRequestHandler(CallToolRequestSchema, async (request) => {
-  const { name, arguments: args } = request.params;
-  
-  const tool = tools.get(name);
-  if (!tool) {
-    throw new Error(`Tool "${name}" not found`);
-  }
-
-  console.log(`Executing tool: ${name}`, args);
-
-  try {
-    const result = await tool.handler(args || {});
-    
-    return {
-      content: [
-        {
-          type: 'text',
-          text: JSON.stringify(result, null, 2),
-        },
-      ],
-    };
-  } catch (error: any) {
-    console.error(`Tool execution failed: ${name}`, error);
-    
-    return {
-      content: [
-        {
-          type: 'text',
-          text: JSON.stringify({
-            success: false,
-            error: {
-              code: 'TOOL_EXECUTION_ERROR',
-              message: error.message,
-              details: error.stack,
-            },
-          }, null, 2),
-        },
-      ],
-      isError: true,
-    };
-  }
-});
-
-/**
- * Graceful shutdown handler
- */
-process.on('SIGINT', async () => {
-  console.log('Shutting down MCP server...');
-  
-  // Kill any running processes
-  for (const [key, pid] of globalProcessMap.entries()) {
-    try {
-      process.kill(pid, 'SIGTERM');
-      console.log(`Terminated process ${key} (PID: ${pid})`);
-    } catch (error) {
-      console.warn(`Failed to terminate process ${key} (PID: ${pid}): ${error}`);
-    }
-  }
-  
-  await server.close();
-  process.exit(0);
-});
-
-/**
- * Main server startup
+ * Main server startup for STDIO mode (backward compatibility)
  */
 async function main() {
   // Validate command line arguments
@@ -245,34 +238,46 @@ async function main() {
     // MCP validation mode
     console.log('MCP Mobile Server - Validation Mode');
     
-    // Register tools for validation
-    await registerTools();
+    // Create a temporary server instance for validation
+    const tempServer = createServer();
     
     console.log('✅ Server configuration is valid');
-    console.log(`✅ ${tools.size} tools registered`);
-    
-    // List all tools
-    console.log('\n📋 Available tools:');
-    for (const [name, tool] of tools.entries()) {
-      console.log(`  - ${name}: ${tool.description}`);
-    }
+    console.log('✅ Tools registered successfully');
     
     process.exit(0);
   }
 
-  // Register all tools
-  await registerTools();
+  // Create server instance
+  const server = createServer();
 
   // Check environment
   const env = await validateEnvironment();
   console.log('Environment validation completed', env);
+
+  // Graceful shutdown handler
+  process.on('SIGINT', async () => {
+    console.log('Shutting down MCP server...');
+    
+    // Kill any running processes
+    for (const [key, pid] of globalProcessMap.entries()) {
+      try {
+        process.kill(pid, 'SIGTERM');
+        console.log(`Terminated process ${key} (PID: ${pid})`);
+      } catch (error) {
+        console.warn(`Failed to terminate process ${key} (PID: ${pid}): ${error}`);
+      }
+    }
+    
+    await server.close();
+    process.exit(0);
+  });
 
   // Start server with stdio transport
   const transport = new StdioServerTransport();
   await server.connect(transport);
   
   console.log('🚀 MCP Mobile Server started successfully');
-  console.log(`📱 ${tools.size} mobile development tools available`);
+  console.log('📱 Mobile development tools available');
   console.log('🔗 Connected via stdio transport');
   
   // Keep the process alive
@@ -290,8 +295,10 @@ process.on('unhandledRejection', (reason, promise) => {
   process.exit(1);
 });
 
-// Start the server
-main().catch((error) => {
-  console.error('Failed to start MCP server:', error);
-  process.exit(1);
-});
+// Only run main() if this file is executed directly (not imported by Smithery)
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((error) => {
+    console.error('Failed to start MCP server:', error);
+    process.exit(1);
+  });
+}

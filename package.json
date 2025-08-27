@@ -4,11 +4,14 @@
   "description": "Native MCP Server for Mobile Development with 36 tools including Flutter/Android SDK automated setup and 10 intelligent super-tools (Android, iOS, Flutter)",
   "type": "module",
   "main": "dist/server.js",
+  "module": "src/server.ts",
   "bin": {
     "mcp-mobile-server": "dist/server.js"
   },
   "scripts": {
     "build": "tsc",
+    "smithery:build": "npx @smithery/cli build",
+    "smithery:dev": "npx @smithery/cli dev",
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
     "validate": "tsx scripts/validate-tools.ts",
