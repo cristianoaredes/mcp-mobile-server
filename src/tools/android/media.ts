@@ -92,7 +92,7 @@ export function createAndroidMediaTools(): Map<string, any> {
         
         const adbArgs = ['-s', parsed.serial, 'exec-out', 'screencap'];
         
-        if (parsed.options?.format) {
+        if (parsed.options?.format === 'png') {
           adbArgs.push('-p'); // PNG format
         }
         
