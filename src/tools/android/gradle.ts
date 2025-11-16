@@ -1,3 +1,15 @@
+/**
+ * @fileoverview Android Gradle Tools
+ *
+ * Provides Gradle build system integration for Android projects, including building,
+ * testing, dependency management, and task execution. Supports both Gradle wrapper
+ * (gradlew) and global Gradle installations.
+ *
+ * @module tools/android/gradle
+ * @category Development Workflow
+ * @see {@link https://developer.android.com/studio/build|Android Gradle Build System}
+ */
+
 import { z } from 'zod';
 import { ProcessExecutor } from '../../utils/process.js';
 import path from 'path';
@@ -5,7 +17,11 @@ import fs from 'fs/promises';
 
 const processExecutor = new ProcessExecutor();
 
-// Zod schemas for Gradle operations
+/**
+ * Zod validation schema for android_gradle_build tool.
+ *
+ * @type {z.ZodObject}
+ */
 const AndroidGradleBuildSchema = z.object({
   projectPath: z.string().min(1),
   task: z.string().default('assembleDebug'),

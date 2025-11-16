@@ -1,3 +1,15 @@
+/**
+ * @fileoverview Android Lint Tools
+ *
+ * Provides Android Lint static code analysis tools for detecting potential bugs,
+ * performance issues, security vulnerabilities, and code quality problems in Android
+ * projects. Supports custom lint rules, baseline creation, and multiple output formats.
+ *
+ * @module tools/android/lint
+ * @category Utilities
+ * @see {@link https://developer.android.com/studio/write/lint|Android Lint Documentation}
+ */
+
 import { z } from 'zod';
 import { ProcessExecutor } from '../../utils/process.js';
 import path from 'path';
@@ -5,7 +17,11 @@ import fs from 'fs/promises';
 
 const processExecutor = new ProcessExecutor();
 
-// Zod schemas for Android Lint operations
+/**
+ * Zod validation schema for android_lint_check tool.
+ *
+ * @type {z.ZodObject}
+ */
 const AndroidLintCheckSchema = z.object({
   projectPath: z.string().min(1),
   options: z.object({
