@@ -1,33 +1,109 @@
+/**
+ * @fileoverview iOS Tools for MCP Mobile Server
+ *
+ * This module provides comprehensive iOS development tools for the MCP protocol,
+ * enabling AI agents to interact with iOS Simulator, Xcode, and the complete
+ * iOS development ecosystem. All tools are macOS-specific and require Xcode.
+ *
+ * @module tools/ios
+ * @category Core Tools
+ *
+ * Key Features:
+ * - iOS Simulator management (list, boot, shutdown, erase, clone)
+ * - Deep link and URL testing
+ * - Screenshot and video recording
+ * - Xcode project integration (build, list schemes)
+ * - Runtime management (list iOS versions, install runtimes)
+ * - macOS platform validation
+ *
+ * @platform darwin (macOS only)
+ * @requires Xcode Command Line Tools
+ *
+ * @example
+ * ```typescript
+ * const iosTools = createIOSTools(globalProcessMap);
+ * const simulatorsTool = iosTools.get('ios_list_simulators');
+ * const result = await simulatorsTool.handler({});
+ * console.log(result.data.simulators);
+ * ```
+ */
+
 import { z } from 'zod';
 import { processExecutor } from '../utils/process.js';
 import path from 'path';
 import fs from 'fs/promises';
 import { spawn } from 'child_process';
 
-// Process tracking for video recordings per tool instance
+/**
+ * Global map tracking active video recording processes.
+ * Maps recording IDs to process IDs.
+ *
+ * @type {Map<string, number>}
+ */
 let activeRecordings: Map<string, number>;
 
-// Zod schemas for iOS tools
+/**
+ * Zod validation schema for iOS simulator action tools.
+ * Used by boot, shutdown, erase operations.
+ *
+ * @type {z.ZodObject}
+ * @property {string} udid - Simulator UDID (Universally Unique Identifier)
+ */
 const IosSimulatorActionSchema = z.object({
   udid: z.string().min(1),
 });
 
+/**
+ * Zod validation schema for ios_simulator_open_url tool.
+ * Validates deep link and URL opening parameters.
+ *
+ * @type {z.ZodObject}
+ * @property {string} udid - Simulator UDID
+ * @property {string} url - URL to open (must be valid URL format)
+ */
 const IosSimulatorOpenUrlSchema = z.object({
   udid: z.string().min(1),
   url: z.string().url(),
 });
 
+/**
+ * Zod validation schema for ios_simulator_screenshot tool.
+ *
+ * @type {z.ZodObject}
+ * @property {string} udid - Simulator UDID
+ * @property {string} path - Output file path for screenshot
+ */
 const IosSimulatorScreenshotSchema = z.object({
   udid: z.string().min(1),
   path: z.string().min(1),
 });
 
+/**
+ * Zod validation schema for ios_simulator_record tool.
+ * Validates video recording parameters.
+ *
+ * @type {z.ZodObject}
+ * @property {string} udid - Simulator UDID
+ * @property {string} path - Output file path for video
+ * @property {number} duration - Recording duration in seconds (1-300, default: 30)
+ */
 const IosSimulatorRecordSchema = z.object({
   udid: z.string().min(1),
   path: z.string().min(1),
   duration: z.number().min(1).max(300).default(30),
 });
 
+/**
+ * Zod validation schema for ios_xcodebuild tool.
+ * Validates Xcode build parameters.
+ *
+ * @type {z.ZodObject}
+ * @property {string} [workspace] - Xcode workspace file path (.xcworkspace)
+ * @property {string} [project] - Xcode project file path (.xcodeproj)
+ * @property {string} scheme - Build scheme name
+ * @property {string} configuration - Build configuration (default: "Debug")
+ * @property {string} [destination] - Build destination (e.g., "platform=iOS Simulator,name=iPhone 14")
+ */
 const IosXcodeBuildSchema = z.object({
   workspace: z.string().optional(),
   project: z.string().optional(),
@@ -36,32 +112,148 @@ const IosXcodeBuildSchema = z.object({
   destination: z.string().optional(),
 });
 
+/**
+ * Zod validation schema for ios_xcode_list tool.
+ * Validates parameters for listing Xcode schemes and targets.
+ *
+ * @type {z.ZodObject}
+ * @property {string} [project] - Xcode project file path
+ * @property {string} [workspace] - Xcode workspace file path
+ */
 const IosXcodeListSchema = z.object({
   project: z.string().optional(),
   workspace: z.string().optional(),
 });
 
-// Helper function to check macOS platform
+/**
+ * Validates that the current platform is macOS (darwin).
+ * iOS tools require macOS with Xcode installed.
+ *
+ * @returns {void}
+ * @throws {Error} If current platform is not macOS
+ *
+ * @example
+ * ```typescript
+ * checkMacOS(); // Throws on Windows/Linux
+ * ```
+ */
 const checkMacOS = (): void => {
   if (process.platform !== 'darwin') {
     throw new Error(`iOS development tools only work on macOS. Current platform: ${process.platform}`);
   }
 };
 
-// Helper function to validate iOS Simulator UDID
+/**
+ * Validates iOS Simulator UDID format.
+ * UDIDs must match UUID v4 format (8-4-4-4-12 hexadecimal pattern).
+ *
+ * @param {string} udid - Simulator UDID to validate
+ * @returns {boolean} True if valid UDID format, false otherwise
+ *
+ * @example
+ * ```typescript
+ * validateUDID('12345678-1234-1234-1234-123456789ABC'); // true
+ * validateUDID('invalid-udid'); // false
+ * ```
+ */
 const validateUDID = (udid: string): boolean => {
   const uuidPattern = /^[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}$/i;
   return uuidPattern.test(udid);
 };
 
-// Helper function to validate scheme name
+/**
+ * Validates Xcode scheme name format.
+ * Scheme names can only contain alphanumeric characters, underscores, and dashes.
+ *
+ * @param {scheme} scheme - Scheme name to validate
+ * @returns {boolean} True if valid scheme name, false otherwise
+ *
+ * @example
+ * ```typescript
+ * validateSchemeName('MyApp-Prod'); // true
+ * validateSchemeName('Invalid Scheme!'); // false
+ * ```
+ */
 const validateSchemeName = (scheme: string): boolean => {
   const schemePattern = /^[a-zA-Z0-9_-]+$/;
   return schemePattern.test(scheme);
 };
 
 /**
- * Create iOS MCP tools
+ * Creates and configures all iOS tools for the MCP Mobile Server.
+ *
+ * This factory function initializes and returns a comprehensive set of iOS development tools,
+ * providing complete iOS Simulator and Xcode integration for AI agents via the MCP protocol.
+ * **macOS Only** - All tools require macOS (darwin) platform with Xcode Command Line Tools.
+ *
+ * **Tools Created:**
+ * - `ios_list_simulators`: List all available iOS simulators with status
+ * - `ios_boot_simulator`: Boot (start) an iOS simulator
+ * - `ios_shutdown_simulator`: Shutdown a running simulator
+ * - `ios_erase_simulator`: Erase simulator content and settings
+ * - `ios_clone_simulator`: Clone an existing simulator
+ * - `ios_simulator_open_url`: Open URL or deep link in simulator
+ * - `ios_simulator_screenshot`: Capture simulator screenshot
+ * - `ios_simulator_record`: Record simulator video
+ * - `ios_list_runtimes`: List available iOS runtime versions
+ * - `ios_install_runtime`: Install new iOS runtime version
+ * - `ios_xcodebuild`: Build Xcode project or workspace
+ * - `ios_xcode_list`: List available schemes and targets
+ *
+ * **Features:**
+ * - Automatic macOS platform validation for all tools
+ * - UDID format validation (UUID v4)
+ * - Xcode scheme name validation
+ * - Video recording with duration control (1-300 seconds)
+ * - Process lifecycle tracking for recordings
+ * - Support for both Xcode projects (.xcodeproj) and workspaces (.xcworkspace)
+ * - Comprehensive error handling with detailed messages
+ *
+ * @param {Map<string, number>} globalProcessMap - Global map tracking all active processes
+ * @returns {Map<string, any>} Map of tool names to tool configurations
+ *
+ * @example
+ * ```typescript
+ * const globalProcesses = new Map();
+ * const tools = createIOSTools(globalProcesses);
+ *
+ * // List simulators
+ * const listSim = tools.get('ios_list_simulators');
+ * const sims = await listSim.handler({});
+ * console.log(sims.data.simulators);
+ *
+ * // Boot simulator
+ * const bootSim = tools.get('ios_boot_simulator');
+ * await bootSim.handler({
+ *   udid: '12345678-1234-1234-1234-123456789ABC'
+ * });
+ *
+ * // Take screenshot
+ * const screenshot = tools.get('ios_simulator_screenshot');
+ * await screenshot.handler({
+ *   udid: '12345678-1234-1234-1234-123456789ABC',
+ *   path: '/tmp/screenshot.png'
+ * });
+ *
+ * // Build Xcode project
+ * const build = tools.get('ios_xcodebuild');
+ * await build.handler({
+ *   project: 'MyApp.xcodeproj',
+ *   scheme: 'MyApp',
+ *   configuration: 'Debug',
+ *   destination: 'platform=iOS Simulator,name=iPhone 14'
+ * });
+ * ```
+ *
+ * @throws {Error} If platform is not macOS (darwin)
+ * @throws {Error} If Xcode Command Line Tools are not installed
+ * @throws {Error} If validation schemas fail for any tool parameters
+ *
+ * @platform darwin (macOS only)
+ * @requires Xcode Command Line Tools
+ *
+ * @see {@link https://developer.apple.com/documentation/xcode|Xcode Documentation}
+ * @see {@link https://developer.apple.com/library/archive/documentation/ToolsLanguages/Conceptual/Xcode_Overview/Simulators.html|iOS Simulator Guide}
  */
 export function createIOSTools(globalProcessMap: Map<string, number>): Map<string, any> {
   // Initialize local recordings tracking if not provided
