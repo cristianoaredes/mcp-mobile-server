@@ -399,4 +399,4 @@ Help me start a Flutter development session on my Android emulator
 
 ---
 
-**🎉 You're ready!** Claude Desktop can now assist you with comprehensive mobile development workflows using all 19 essential tools in the MCP Mobile Server.
+**🎉 You're ready!** Claude Desktop can now assist you with comprehensive mobile development workflows using all 36 powerful tools in the MCP Mobile Server.

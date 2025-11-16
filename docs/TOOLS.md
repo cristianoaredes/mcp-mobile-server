@@ -1,6 +1,6 @@
 # 🔧 Tools Reference
 
-This document provides detailed information about all 19 essential tools available in the MCP Mobile Server.
+This document provides detailed information about all 36 tools available in the MCP Mobile Server.
 
 ---
 

@@ -226,7 +226,7 @@ npm run mcp:validate
 
 # Expected output:
 ✅ Server configuration is valid
-✅ 19 tools registered
+✅ 36 tools registered
 ```
 
 If you see errors, check:
