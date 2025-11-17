@@ -8,7 +8,7 @@
 
 **Native MCP Server for Mobile Development**
 
-A streamlined **Model Context Protocol (MCP) Server** with **19 essential tools** for Android, iOS, and Flutter development.
+A comprehensive **Model Context Protocol (MCP) Server** with **36 powerful tools** for Android, iOS, and Flutter development.
 
 > **⚠️ Work in Progress**  
 > This project is under active development. Use with caution and report issues.
@@ -42,34 +42,55 @@ npm install -g @cristianoaredes/mcp-mobile-server
 
 ---
 
-## 📋 Essential Tools (19 Total)
+## 📋 Tool Categories (36 Total)
 
 ### **🔧 Core Tools (5)**
-- `health_check` - Server diagnostics
-- `flutter_doctor` - Flutter environment check
-- `flutter_version` - Flutter SDK version
-- `flutter_list_devices` - Connected devices
-- `android_list_devices` - Android devices
+- `health_check` - Server diagnostics and environment validation
+- `flutter_doctor` - Complete Flutter environment check
+- `flutter_version` - Flutter SDK version information
+- `flutter_list_devices` - List all connected devices
+- `android_list_devices` - Android devices and emulators
 
-### **📱 Device Management (4)**
-- `native_run_list_devices` - Cross-platform device list
+### **📱 Device Management (9)**
+- `native_run_list_devices` - Cross-platform device listing
 - `native_run_install_app` - Universal app installer
-- `ios_list_simulators` - iOS simulators
-- `android_list_emulators` - Android emulators
+- `ios_list_simulators` - List iOS simulators
+- `android_list_emulators` - List Android emulators
+- `android_create_avd` - Create Android Virtual Device
+- `android_start_emulator` - Start Android emulator
+- `android_stop_emulator` - Stop Android emulator
+- `ios_shutdown_simulator` - Shutdown iOS simulator
+- `flutter_launch_emulator` - Launch Flutter emulator
 
 ### **⚡ Development Workflow (6)**
-- `flutter_run` - Hot reload development
-- `flutter_build` - Release builds
-- `flutter_test` - Run tests
-- `flutter_clean` - Clean projects
-- `flutter_pub_get` - Dependencies
-- `android_install_apk` - Install Android apps
+- `flutter_run` - Hot reload development session
+- `flutter_build` - Multi-platform release builds
+- `flutter_test` - Run test suites
+- `flutter_clean` - Clean build artifacts
+- `flutter_pub_get` - Install dependencies
+- `android_install_apk` - Install APK on device
 
 ### **🛠️ Utilities (4)**
-- `android_logcat` - Debug logs
-- `android_screenshot` - Android screenshots
-- `ios_boot_simulator` - Start iOS simulator
-- `ios_take_screenshot` - iOS screenshots
+- `android_logcat` - Real-time debug logs
+- `android_screenshot` - Capture Android screenshots
+- `ios_boot_simulator` - Boot iOS simulator
+- `ios_take_screenshot` - Capture iOS screenshots
+
+### **🚀 Super-Tools (10)**
+- `flutter_dev_session` - Complete development session workflow
+- `flutter_test_suite` - Full test suite execution
+- `flutter_release_build` - Multi-platform release pipeline
+- `mobile_device_manager` - Smart device management
+- `flutter_performance_profile` - Performance profiling with DevTools
+- `flutter_deploy_pipeline` - Complete deployment workflow
+- `flutter_fix_common_issues` - Auto-remediation of common issues
+- `android_full_debug` - Complete Android debugging toolkit
+- `ios_simulator_manager` - Smart iOS simulator management
+- `flutter_inspector_session` - Widget inspector session
+
+### **⚙️ Setup & Configuration (2)**
+- `flutter_setup_environment` - Automated Flutter SDK setup
+- `android_sdk_setup` - Android SDK installation and configuration
 
 ---
 
@@ -95,18 +116,20 @@ npm install -g @cristianoaredes/mcp-mobile-server
 
 ---
 
-## 🚨 What's New in v2.0
+## 🚨 What's New in v2.3.0
 
-- **Streamlined**: Reduced from 54 to 19 essential tools
-- **Reliable**: Focus on stable, tested functionality
-- **Organized**: Clean documentation structure
-- **Essential-only**: Removed experimental/risky features
+- **Expanded**: 36 comprehensive tools across all categories
+- **Super-Tools**: 10 intelligent workflow automation tools
+- **Setup Tools**: Automated environment configuration
+- **Enhanced**: Improved device management and debugging
+- **Stable**: Production-ready with comprehensive testing
 
-### **Breaking Changes**
-- Removed 35 less essential tools
-- Simplified tool categories (Essential only)
-- New documentation structure
-- Updated fallback system
+### **Key Features**
+- Complete development workflow automation
+- Smart device selection and management
+- Multi-platform build and deployment
+- Auto-remediation of common issues
+- Performance profiling and debugging
 
 ---
 
@@ -132,6 +155,6 @@ npm run mcp:validate
 
 ## 📊 Project Status
 
-**Version:** 2.0.0 | **Status:** 🚧 WIP | **Tools:** 19 | **Platforms:** Android, iOS, Flutter
+**Version:** 2.3.0 | **Status:** ✅ Production Ready | **Tools:** 36 | **Platforms:** Android, iOS, Flutter
 
-*Streamlined for reliability and ease of use*
+*Comprehensive tooling for professional mobile development*

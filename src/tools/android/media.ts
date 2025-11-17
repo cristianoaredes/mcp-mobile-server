@@ -1,3 +1,16 @@
+/**
+ * @fileoverview Android Media Tools
+ *
+ * Provides screenshot capture and screen recording functionality for Android devices
+ * using ADB screencap and screenrecord commands. Supports various formats, quality
+ * settings, and recording options.
+ *
+ * @module tools/android/media
+ * @category Utilities
+ * @see {@link https://developer.android.com/studio/command-line/adb#screencap|ADB screencap}
+ * @see {@link https://developer.android.com/studio/command-line/adb#screenrecord|ADB screenrecord}
+ */
+
 import { z } from 'zod';
 import { ProcessExecutor } from '../../utils/process.js';
 import { spawn } from 'child_process';
@@ -6,7 +19,11 @@ import fs from 'fs/promises';
 
 const processExecutor = new ProcessExecutor();
 
-// Zod schemas for Android media operations
+/**
+ * Zod validation schema for android_screenshot tool.
+ *
+ * @type {z.ZodObject}
+ */
 const AndroidScreenshotSchema = z.object({
   serial: z.string().min(1),
   outputPath: z.string().min(1),

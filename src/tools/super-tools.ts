@@ -1,6 +1,38 @@
 /**
- * Super Tools - Combined workflows for common mobile development tasks
- * These tools combine multiple atomic operations into meaningful workflows
+ * @fileoverview Super-Tools for MCP Mobile Server
+ *
+ * This module provides high-level workflow automation tools that combine multiple
+ * atomic operations into meaningful, production-ready development workflows. These
+ * "super-tools" orchestrate complex multi-step processes to streamline common
+ * mobile development tasks.
+ *
+ * @module tools/super-tools
+ * @category Super-Tools
+ *
+ * Key Features:
+ * - Workflow automation combining multiple atomic tools
+ * - Intelligent device selection and management
+ * - Complete development session setup
+ * - Comprehensive testing workflows with coverage
+ * - Full debugging and diagnostic workflows
+ * - Build and deployment automation
+ * - Error handling with step-by-step reporting
+ *
+ * Philosophy:
+ * Super-tools follow the "Convention over Configuration" principle, making smart
+ * decisions to reduce the need for manual configuration while still allowing
+ * customization when needed.
+ *
+ * @example
+ * ```typescript
+ * const superTools = createSuperTools(globalProcessMap);
+ * const devSession = superTools.get('flutter_dev_session');
+ * const result = await devSession.handler({
+ *   cwd: '/path/to/project',
+ *   preferPhysical: true
+ * });
+ * console.log(result.data.sessionId);
+ * ```
  */
 
 import { z } from 'zod';
@@ -9,6 +41,85 @@ import { createFlutterTools } from './flutter.js';
 import { createAndroidTools } from './android.js';
 import { createIOSTools } from './ios.js';
 
+/**
+ * Creates and configures all Super-Tools for the MCP Mobile Server.
+ *
+ * This factory function initializes workflow automation tools that orchestrate
+ * multiple atomic operations into production-ready development workflows. Each
+ * super-tool handles complex multi-step processes with intelligent decision-making
+ * and comprehensive error handling.
+ *
+ * **Super-Tools Created:**
+ *
+ * **Flutter Workflows:**
+ * - `flutter_dev_session`: Complete dev setup (doctor → devices → select → run)
+ * - `flutter_test_suite`: Full test suite (unit → widget → integration + coverage)
+ * - `flutter_deploy_workflow`: End-to-end deployment (test → build → sign)
+ *
+ * **Android Workflows:**
+ * - `android_full_debug`: Complete debug session (device → install → launch → logcat)
+ * - `android_emulator_workflow`: Emulator lifecycle (create → start → wait → ready)
+ * - `android_build_deploy`: Build and deploy (gradle build → sign → install)
+ *
+ * **iOS Workflows:**
+ * - `ios_simulator_manager`: Simulator lifecycle (boot → wait → ready → screenshot)
+ * - `ios_build_test`: Build and test workflow (build → install → test)
+ *
+ * **Cross-Platform Workflows:**
+ * - `mobile_test_all`: Test on all available platforms
+ * - `mobile_deploy_all`: Deploy to all configured platforms
+ *
+ * **Workflow Features:**
+ * - Step-by-step execution with detailed reporting
+ * - Automatic error recovery and fallback strategies
+ * - Intelligent device/simulator selection
+ * - Parallel execution where possible
+ * - Progress tracking for long-running operations
+ * - Comprehensive result aggregation
+ *
+ * @param {Map<string, number>} processMap - Global map tracking all active processes
+ * @returns {Map<string, any>} Map of super-tool names to tool configurations
+ *
+ * @example
+ * ```typescript
+ * const globalProcesses = new Map();
+ * const tools = createSuperTools(globalProcesses);
+ *
+ * // Flutter development session
+ * const devSession = tools.get('flutter_dev_session');
+ * const result = await devSession.handler({
+ *   cwd: '/path/to/flutter/project',
+ *   target: 'lib/main.dart',
+ *   preferPhysical: true
+ * });
+ * console.log(`Session ID: ${result.data.sessionId}`);
+ * console.log(`Device: ${result.data.selectedDevice.name}`);
+ *
+ * // Android full debug workflow
+ * const androidDebug = tools.get('android_full_debug');
+ * const debugResult = await androidDebug.handler({
+ *   apkPath: '/path/to/app.apk',
+ *   packageName: 'com.example.app',
+ *   mainActivity: '.MainActivity'
+ * });
+ *
+ * // Full test suite with coverage
+ * const testSuite = tools.get('flutter_test_suite');
+ * const testResult = await testSuite.handler({
+ *   cwd: '/path/to/project',
+ *   coverage: true,
+ *   integrationTests: true
+ * });
+ * console.log(`Coverage: ${testResult.data.coverage}%`);
+ * ```
+ *
+ * @throws {Error} If underlying atomic tools fail
+ * @throws {Error} If validation schemas fail for any workflow parameters
+ *
+ * @see {@link createFlutterTools} for Flutter atomic tools
+ * @see {@link createAndroidTools} for Android atomic tools
+ * @see {@link createIOSTools} for iOS atomic tools
+ */
 export function createSuperTools(processMap: Map<string, number>): Map<string, any> {
   const tools = new Map();
   

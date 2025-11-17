@@ -1,27 +1,64 @@
+/**
+ * @fileoverview Native-Run Tools - Lightweight ADB Alternative
+ *
+ * Provides native-run integration as a lightweight alternative to ADB for device
+ * management and app deployment. native-run is part of the Capacitor/Ionic ecosystem
+ * and offers cross-platform support for Android and iOS.
+ *
+ * @module tools/android/native-run
+ * @category Device Management
+ * @see {@link https://github.com/ionic-team/native-run|native-run GitHub}
+ */
+
 import { z } from 'zod';
 import { ProcessExecutor } from '../../utils/process.js';
 import { Tool } from '@modelcontextprotocol/sdk/types.js';
 
 const processExecutor = new ProcessExecutor();
 
-// Zod schemas for native-run operations
+/**
+ * Zod validation schema for native_run_list_devices tool.
+ *
+ * @type {z.ZodObject}
+ * @property {string} platform - Target platform (android or ios)
+ */
 const NativeRunListDevicesSchema = z.object({
   platform: z.enum(['android', 'ios']).default('android'),
 });
 
+/**
+ * Zod validation schema for native_run_install_app tool.
+ *
+ * @type {z.ZodObject}
+ * @property {string} platform - Target platform (android or ios)
+ * @property {string} appPath - Path to app file (APK for Android, .app for iOS)
+ * @property {string} [deviceId] - Target device ID (optional)
+ */
 const NativeRunInstallAppSchema = z.object({
   platform: z.enum(['android', 'ios']).default('android'),
   appPath: z.string().min(1),
   deviceId: z.string().optional(),
 });
 
+/**
+ * Zod validation schema for native_run_run_app tool.
+ *
+ * @type {z.ZodObject}
+ * @property {string} platform - Target platform (android or ios)
+ * @property {string} appId - App identifier (bundle ID for iOS, package name for Android)
+ * @property {string} [deviceId] - Target device ID (optional)
+ */
 const NativeRunRunAppSchema = z.object({
   platform: z.enum(['android', 'ios']).default('android'),
   appId: z.string().min(1),
   deviceId: z.string().optional(),
 });
 
-// Helper function to check if native-run is available
+/**
+ * Checks if native-run CLI is available in the system PATH.
+ *
+ * @returns {Promise<boolean>} True if native-run is available, false otherwise
+ */
 async function isNativeRunAvailable(): Promise<boolean> {
   try {
     await processExecutor.execute('native-run', ['--version']);
@@ -32,7 +69,10 @@ async function isNativeRunAvailable(): Promise<boolean> {
 }
 
 /**
- * Create native-run tools as ADB alternatives
+ * Creates native-run tools as lightweight alternatives to ADB.
+ * Provides cross-platform device management for Android and iOS.
+ *
+ * @returns {Map<string, Tool>} Map of native-run tool names to tool configurations
  */
 export function createNativeRunTools(): Map<string, Tool> {
   const tools = new Map<string, Tool>();

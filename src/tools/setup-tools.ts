@@ -1,6 +1,37 @@
 /**
- * Setup Tools - Automated environment setup for mobile development
- * These tools help configure Flutter, Android SDK, and other dependencies
+ * @fileoverview Setup & Configuration Tools for MCP Mobile Server
+ *
+ * This module provides automated environment setup and configuration tools for mobile
+ * development, handling Flutter SDK installation, Android SDK setup, and complete
+ * environment configuration across different platforms (macOS, Linux, Windows).
+ *
+ * @module tools/setup-tools
+ * @category Setup & Configuration
+ *
+ * Key Features:
+ * - Automated Flutter SDK installation and configuration
+ * - Android SDK setup with environment variable configuration
+ * - Cross-platform support (macOS, Linux, Windows)
+ * - Automatic shell environment configuration (.zshrc, .bashrc)
+ * - Environment validation and health checks
+ * - Smart recommendations for missing components
+ * - Path detection and automatic PATH updates
+ *
+ * Platform Support:
+ * - macOS: Homebrew integration, .zshrc configuration
+ * - Linux: APT/DNF package managers, .bashrc configuration
+ * - Windows: System environment variables, PowerShell support
+ *
+ * @example
+ * ```typescript
+ * const setupTools = createSetupTools(globalProcessMap);
+ * const flutterSetup = setupTools.get('flutter_setup_environment');
+ * const result = await flutterSetup.handler({
+ *   action: 'full',
+ *   channel: 'stable',
+ *   autoConfig: true
+ * });
+ * ```
  */
 
 import { z } from 'zod';
@@ -9,6 +40,89 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as os from 'os';
 
+/**
+ * Creates and configures all Setup & Configuration tools for the MCP Mobile Server.
+ *
+ * This factory function initializes environment setup tools that automate the
+ * installation and configuration of mobile development dependencies across
+ * different platforms. These tools reduce setup time from hours to minutes.
+ *
+ * **Setup Tools Created:**
+ *
+ * 1. **flutter_setup_environment**
+ *    - Complete Flutter SDK installation and configuration
+ *    - Actions: check, install, configure, full
+ *    - Automatic PATH configuration
+ *    - Channel selection (stable, beta, dev, master)
+ *    - Cross-platform support
+ *    - Shell environment updates (.zshrc, .bashrc)
+ *    - Environment validation with recommendations
+ *
+ * 2. **android_sdk_setup**
+ *    - Android SDK installation and configuration
+ *    - SDK component installation (platform-tools, build-tools, etc.)
+ *    - Environment variable setup (ANDROID_HOME, ANDROID_SDK_ROOT)
+ *    - SDK Manager integration
+ *    - AVD (Android Virtual Device) setup
+ *    - System image installation
+ *    - Build tools and platform tools configuration
+ *
+ * **Setup Workflow:**
+ * 1. Check current environment status
+ * 2. Identify missing components
+ * 3. Install required SDKs and tools
+ * 4. Configure environment variables
+ * 5. Update shell configuration files
+ * 6. Validate installation
+ * 7. Provide recommendations for manual steps
+ *
+ * **Features:**
+ * - Idempotent operations (safe to re-run)
+ * - Comprehensive error handling
+ * - Progress reporting for long operations
+ * - Platform-specific optimizations
+ * - Automatic dependency detection
+ * - Smart path resolution
+ *
+ * @param {Map<string, number>} processMap - Global map tracking all active processes
+ * @returns {Map<string, any>} Map of setup tool names to tool configurations
+ *
+ * @example
+ * ```typescript
+ * const globalProcesses = new Map();
+ * const tools = createSetupTools(globalProcesses);
+ *
+ * // Check environment status
+ * const setupTool = tools.get('flutter_setup_environment');
+ * const checkResult = await setupTool.handler({ action: 'check' });
+ * console.log('Flutter installed:', checkResult.data.checks.flutter.installed);
+ * console.log('Android SDK installed:', checkResult.data.checks.android.sdkInstalled);
+ *
+ * // Full Flutter setup
+ * const fullSetup = await setupTool.handler({
+ *   action: 'full',
+ *   channel: 'stable',
+ *   installPath: '/opt/flutter',
+ *   autoConfig: true
+ * });
+ * console.log('Setup complete:', fullSetup.success);
+ * console.log('Recommendations:', fullSetup.data.recommendations);
+ *
+ * // Android SDK setup
+ * const androidSetup = tools.get('android_sdk_setup');
+ * const androidResult = await androidSetup.handler({
+ *   action: 'install',
+ *   components: ['platform-tools', 'build-tools;33.0.0', 'platforms;android-33']
+ * });
+ * ```
+ *
+ * @throws {Error} If platform is not supported
+ * @throws {Error} If required permissions are missing (e.g., write access to install directory)
+ * @throws {Error} If validation schemas fail for any setup parameters
+ *
+ * @see {@link https://docs.flutter.dev/get-started/install|Flutter Installation Guide}
+ * @see {@link https://developer.android.com/studio/command-line/sdkmanager|Android SDK Manager}
+ */
 export function createSetupTools(processMap: Map<string, number>): Map<string, any> {
   const tools = new Map();
 

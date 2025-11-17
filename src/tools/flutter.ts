@@ -1,17 +1,65 @@
+/**
+ * @fileoverview Flutter Tools for MCP Mobile Server
+ *
+ * This module provides comprehensive Flutter development tools for the MCP protocol,
+ * enabling AI agents to interact with Flutter SDK, manage devices, run development
+ * sessions, execute builds, and manage the complete Flutter development lifecycle.
+ *
+ * @module tools/flutter
+ * @category Core Tools
+ *
+ * Key Features:
+ * - Environment diagnostics (flutter doctor, version)
+ * - Device and emulator management
+ * - Development session management with hot reload
+ * - Build automation for multiple platforms
+ * - Testing with coverage support
+ * - Project maintenance (clean, pub get)
+ * - Screenshot capture
+ *
+ * @example
+ * ```typescript
+ * const flutterTools = createFlutterTools(globalProcessMap);
+ * const doctorTool = flutterTools.get('flutter_doctor');
+ * const result = await doctorTool.handler({});
+ * ```
+ */
+
 import { z } from 'zod';
 import { processExecutor } from '../utils/process.js';
 import path from 'path';
 import fs from 'fs/promises';
 import { spawn } from 'child_process';
 
-// Process tracking for flutter run sessions per tool instance
+/**
+ * Global map tracking active Flutter run sessions.
+ * Maps session IDs to session metadata including process ID, device ID, and project path.
+ *
+ * @type {Map<string, {pid: number, deviceId: string, projectPath: string}>}
+ */
 let runningFlutterSessions: Map<string, { pid: number; deviceId: string; projectPath: string }>;
 
-// Zod schemas for Flutter tools
+/**
+ * Zod validation schema for flutter_launch_emulator tool.
+ * Validates emulator ID parameter.
+ *
+ * @type {z.ZodObject}
+ */
 const FlutterEmulatorLaunchSchema = z.object({
   emulatorId: z.string().min(1),
 });
 
+/**
+ * Zod validation schema for flutter_run tool.
+ * Validates Flutter development session parameters.
+ *
+ * @type {z.ZodObject}
+ * @property {string} cwd - Working directory (Flutter project root)
+ * @property {string} [deviceId] - Target device ID
+ * @property {string} [target] - Target dart file (e.g., lib/main.dart)
+ * @property {string} [flavor] - Build flavor
+ * @property {number} [debugPort] - Debug port (1024-65535)
+ */
 const FlutterRunSchema = z.object({
   cwd: z.string().min(1),
   deviceId: z.string().optional(),
@@ -20,6 +68,16 @@ const FlutterRunSchema = z.object({
   debugPort: z.number().min(1024).max(65535).optional(),
 });
 
+/**
+ * Zod validation schema for flutter_build tool.
+ * Validates Flutter build parameters for multiple platforms.
+ *
+ * @type {z.ZodObject}
+ * @property {string} cwd - Working directory (Flutter project root)
+ * @property {string} target - Build target (apk, appbundle, ipa, ios, android, web, etc.)
+ * @property {string} buildMode - Build mode (debug, profile, release)
+ * @property {string} [flavor] - Build flavor
+ */
 const FlutterBuildSchema = z.object({
   cwd: z.string().min(1),
   target: z.enum(['apk', 'appbundle', 'ipa', 'ios', 'android', 'web', 'windows', 'macos', 'linux']),
@@ -27,30 +85,76 @@ const FlutterBuildSchema = z.object({
   flavor: z.string().optional(),
 });
 
+/**
+ * Zod validation schema for flutter_test tool.
+ * Validates Flutter test execution parameters.
+ *
+ * @type {z.ZodObject}
+ * @property {string} cwd - Working directory (Flutter project root)
+ * @property {string} [testFile] - Specific test file to run
+ * @property {boolean} coverage - Enable test coverage (default: false)
+ */
 const FlutterTestSchema = z.object({
   cwd: z.string().min(1),
   testFile: z.string().optional(),
   coverage: z.boolean().default(false),
 });
 
+/**
+ * Zod validation schema for flutter_clean tool.
+ *
+ * @type {z.ZodObject}
+ * @property {string} cwd - Working directory (Flutter project root)
+ */
 const FlutterCleanSchema = z.object({
   cwd: z.string().min(1),
 });
 
+/**
+ * Zod validation schema for flutter_pub_get tool.
+ *
+ * @type {z.ZodObject}
+ * @property {string} cwd - Working directory (Flutter project root)
+ */
 const FlutterPubGetSchema = z.object({
   cwd: z.string().min(1),
 });
 
+/**
+ * Zod validation schema for flutter_screenshot tool.
+ *
+ * @type {z.ZodObject}
+ * @property {string} [deviceId] - Target device ID
+ * @property {string} [outputPath] - Output PNG file path
+ */
 const FlutterScreenshotSchema = z.object({
   deviceId: z.string().optional(),
   outputPath: z.string().optional(),
 });
 
+/**
+ * Zod validation schema for flutter_stop_session tool.
+ *
+ * @type {z.ZodObject}
+ * @property {string} sessionId - Flutter session ID to stop
+ */
 const FlutterStopSessionSchema = z.object({
   sessionId: z.string().min(1),
 });
 
-// Helper function to validate Flutter project
+/**
+ * Validates that a directory is a valid Flutter project.
+ * Checks for pubspec.yaml file and flutter section.
+ *
+ * @param {string} cwd - Directory path to validate
+ * @returns {Promise<void>}
+ * @throws {Error} If pubspec.yaml not found or flutter section missing
+ *
+ * @example
+ * ```typescript
+ * await validateFlutterProject('/path/to/flutter/project');
+ * ```
+ */
 const validateFlutterProject = async (cwd: string): Promise<void> => {
   const pubspecPath = path.join(cwd, 'pubspec.yaml');
   try {
@@ -65,7 +169,59 @@ const validateFlutterProject = async (cwd: string): Promise<void> => {
 };
 
 /**
- * Create Flutter MCP tools
+ * Creates and configures all Flutter tools for the MCP Mobile Server.
+ *
+ * This factory function initializes and returns a complete set of Flutter development tools,
+ * providing comprehensive Flutter SDK integration for AI agents via the MCP protocol.
+ *
+ * **Tools Created:**
+ * - `flutter_doctor`: System diagnostics and environment validation
+ * - `flutter_version`: Get Flutter SDK version information
+ * - `flutter_list_devices`: List connected devices and emulators
+ * - `flutter_list_emulators`: List available emulators
+ * - `flutter_launch_emulator`: Launch a Flutter emulator
+ * - `flutter_run`: Start development session with hot reload
+ * - `flutter_stop_session`: Stop running development session
+ * - `flutter_list_sessions`: List active development sessions
+ * - `flutter_build`: Build app for target platform
+ * - `flutter_test`: Run tests with optional coverage
+ * - `flutter_clean`: Clean build cache
+ * - `flutter_pub_get`: Install project dependencies
+ * - `flutter_screenshot`: Capture screenshot from device
+ *
+ * **Features:**
+ * - Session management with hot reload support
+ * - Multi-platform build support (Android, iOS, Web, Desktop)
+ * - Comprehensive error handling and validation
+ * - Process lifecycle tracking
+ * - Automatic fallback for machine-readable output
+ *
+ * @param {Map<string, number>} globalProcessMap - Global map tracking all active processes
+ * @returns {Map<string, any>} Map of tool names to tool configurations
+ *
+ * @example
+ * ```typescript
+ * const globalProcesses = new Map();
+ * const tools = createFlutterTools(globalProcesses);
+ *
+ * // Use flutter_doctor
+ * const doctor = tools.get('flutter_doctor');
+ * const result = await doctor.handler({});
+ * console.log(result.data.machineOutput);
+ *
+ * // Start development session
+ * const run = tools.get('flutter_run');
+ * const session = await run.handler({
+ *   cwd: '/path/to/project',
+ *   deviceId: 'emulator-5554'
+ * });
+ * console.log(session.data.sessionId);
+ * ```
+ *
+ * @throws {Error} If Flutter SDK is not installed or not in PATH
+ * @throws {Error} If validation schemas fail for any tool parameters
+ *
+ * @see {@link https://docs.flutter.dev/reference/flutter-cli|Flutter CLI Reference}
  */
 export function createFlutterTools(globalProcessMap: Map<string, number>): Map<string, any> {
   // Initialize local sessions tracking if not provided

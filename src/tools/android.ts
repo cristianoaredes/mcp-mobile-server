@@ -1,3 +1,31 @@
+/**
+ * @fileoverview Android Tools for MCP Mobile Server
+ *
+ * This module provides comprehensive Android development tools for the MCP protocol,
+ * enabling AI agents to interact with Android SDK, ADB (Android Debug Bridge), AVD
+ * (Android Virtual Device), emulators, and the complete Android development ecosystem.
+ *
+ * @module tools/android
+ * @category Core Tools
+ *
+ * Key Features:
+ * - Android SDK package management (list, install)
+ * - ADB device interaction (list, install, uninstall, shell, logcat)
+ * - AVD management (create, delete, list)
+ * - Emulator control (start, stop, with advanced options)
+ * - Integration with specialized tools (Gradle, Lint, Media, native-run)
+ * - Automatic fallback system (ADB → native-run)
+ * - Process lifecycle tracking for emulators
+ *
+ * @example
+ * ```typescript
+ * const androidTools = createAndroidTools(globalProcessMap);
+ * const devicesTool = androidTools.get('android_list_devices');
+ * const result = await devicesTool.handler({});
+ * console.log(result.data.devices);
+ * ```
+ */
+
 import { z } from 'zod';
 import { processExecutor } from '../utils/process.js';
 import { fallbackManager } from '../utils/fallbacks.js';
@@ -9,14 +37,35 @@ import { createAndroidLintTools } from './android/lint.js';
 import { createAndroidMediaTools } from './android/media.js';
 import { createNativeRunTools } from './android/native-run.js';
 
-// Process tracking for emulators per tool instance
+/**
+ * Global map tracking running Android emulator processes.
+ * Maps AVD names to process IDs.
+ *
+ * @type {Map<string, number>}
+ */
 let runningEmulators: Map<string, number>;
 
-// Zod schemas for Android tools
+/**
+ * Zod validation schema for android_sdk_install_packages tool.
+ * Validates SDK package installation parameters.
+ *
+ * @type {z.ZodObject}
+ * @property {string[]} packages - Array of SDK package names to install
+ */
 const AndroidPackageSchema = z.object({
   packages: z.array(z.string().min(1)).min(1),
 });
 
+/**
+ * Zod validation schema for android_create_avd tool.
+ * Validates Android Virtual Device creation parameters.
+ *
+ * @type {z.ZodObject}
+ * @property {string} name - AVD name
+ * @property {string} systemImageId - System image identifier (e.g., "system-images;android-30;google_apis;x86")
+ * @property {string} [device] - Device profile (optional)
+ * @property {string} [sdcard] - SD card size (e.g., "512M", "1G")
+ */
 const AndroidAvdCreateSchema = z.object({
   name: z.string().min(1),
   systemImageId: z.string().min(1),
@@ -24,6 +73,17 @@ const AndroidAvdCreateSchema = z.object({
   sdcard: z.string().optional(),
 });
 
+/**
+ * Zod validation schema for android_start_emulator tool.
+ * Validates Android emulator startup parameters.
+ *
+ * @type {z.ZodObject}
+ * @property {string} avdName - AVD name to start
+ * @property {Object} [options] - Emulator startup options
+ * @property {boolean} [options.noWindow] - Run headless without GUI
+ * @property {number} [options.port] - Emulator port (5554-5682)
+ * @property {string} [options.gpu] - GPU acceleration mode
+ */
 const AndroidEmulatorStartSchema = z.object({
   avdName: z.string().min(1),
   options: z.object({
@@ -33,6 +93,17 @@ const AndroidEmulatorStartSchema = z.object({
   }).optional(),
 });
 
+/**
+ * Zod validation schema for android_install_apk tool.
+ * Validates APK installation parameters.
+ *
+ * @type {z.ZodObject}
+ * @property {string} serial - Device serial number
+ * @property {string} apkPath - Path to APK file
+ * @property {Object} [options] - Installation options
+ * @property {boolean} [options.replace] - Replace existing app
+ * @property {boolean} [options.test] - Install as test APK
+ */
 const AndroidAdbInstallSchema = z.object({
   serial: z.string().min(1),
   apkPath: z.string().min(1),
@@ -42,24 +113,61 @@ const AndroidAdbInstallSchema = z.object({
   }).optional(),
 });
 
+/**
+ * Zod validation schema for android_adb_shell tool.
+ * Validates ADB shell command parameters.
+ *
+ * @type {z.ZodObject}
+ * @property {string} serial - Device serial number
+ * @property {string} command - Shell command to execute
+ */
 const AndroidAdbShellSchema = z.object({
   serial: z.string().min(1),
   command: z.string().min(1),
 });
 
+/**
+ * Zod validation schema for android_stop_emulator tool.
+ *
+ * @type {z.ZodObject}
+ * @property {string} avdName - AVD name to stop
+ */
 const AndroidEmulatorStopSchema = z.object({
   avdName: z.string().min(1),
 });
 
+/**
+ * Zod validation schema for android_adb_uninstall tool.
+ *
+ * @type {z.ZodObject}
+ * @property {string} serial - Device serial number
+ * @property {string} packageName - Android package name to uninstall
+ */
 const AndroidAdbUninstallSchema = z.object({
   serial: z.string().min(1),
   packageName: z.string().min(1),
 });
 
+/**
+ * Zod validation schema for android_delete_avd tool.
+ *
+ * @type {z.ZodObject}
+ * @property {string} name - AVD name to delete
+ */
 const AndroidAvdDeleteSchema = z.object({
   name: z.string().min(1),
 });
 
+/**
+ * Zod validation schema for android_adb_logcat tool.
+ * Validates logcat command parameters.
+ *
+ * @type {z.ZodObject}
+ * @property {string} serial - Device serial number
+ * @property {string} [filter] - Logcat filter expression
+ * @property {number} lines - Number of lines to retrieve (1-10000, default: 100)
+ * @property {boolean} clear - Clear logcat buffer before reading
+ */
 const AndroidAdbLogcatSchema = z.object({
   serial: z.string().min(1),
   filter: z.string().optional(),
@@ -68,7 +176,71 @@ const AndroidAdbLogcatSchema = z.object({
 });
 
 /**
- * Create Android MCP tools
+ * Creates and configures all Android tools for the MCP Mobile Server.
+ *
+ * This factory function initializes and returns a comprehensive set of Android development tools,
+ * providing complete Android SDK, ADB, and emulator integration for AI agents via the MCP protocol.
+ *
+ * **Core Tools Created:**
+ * - `android_sdk_list_packages`: List available and installed SDK packages
+ * - `android_sdk_install_packages`: Install SDK packages
+ * - `android_list_devices`: List connected Android devices and emulators
+ * - `android_create_avd`: Create Android Virtual Device (AVD)
+ * - `android_delete_avd`: Delete Android Virtual Device
+ * - `android_list_avds`: List all available AVDs
+ * - `android_start_emulator`: Start Android emulator
+ * - `android_stop_emulator`: Stop running emulator
+ * - `android_install_apk`: Install APK on device
+ * - `android_adb_uninstall`: Uninstall app from device
+ * - `android_adb_shell`: Execute shell command on device
+ * - `android_adb_logcat`: Read device logs (logcat)
+ *
+ * **Specialized Tools** (via sub-modules):
+ * - Gradle tools: Build, assemble, test Android projects
+ * - Lint tools: Code quality analysis
+ * - Media tools: Screenshot, screen recording
+ * - Native-run tools: Lightweight alternative to ADB
+ *
+ * **Features:**
+ * - Automatic fallback system (ADB → native-run when ADB unavailable)
+ * - Process lifecycle tracking for emulators
+ * - Security validation for all commands and paths
+ * - Comprehensive error handling with detailed messages
+ * - Support for headless emulators (CI/CD environments)
+ * - GPU acceleration options
+ *
+ * @param {Map<string, number>} globalProcessMap - Global map tracking all active processes
+ * @returns {Map<string, any>} Map of tool names to tool configurations
+ *
+ * @example
+ * ```typescript
+ * const globalProcesses = new Map();
+ * const tools = createAndroidTools(globalProcesses);
+ *
+ * // List devices
+ * const devicesTool = tools.get('android_list_devices');
+ * const devices = await devicesTool.handler({});
+ * console.log(devices.data.devices);
+ *
+ * // Create and start emulator
+ * const createAvd = tools.get('android_create_avd');
+ * await createAvd.handler({
+ *   name: 'test_device',
+ *   systemImageId: 'system-images;android-30;google_apis;x86'
+ * });
+ *
+ * const startEmu = tools.get('android_start_emulator');
+ * await startEmu.handler({
+ *   avdName: 'test_device',
+ *   options: { noWindow: true, gpu: 'swiftshader_indirect' }
+ * });
+ * ```
+ *
+ * @throws {Error} If Android SDK is not installed or not configured
+ * @throws {Error} If validation schemas fail for any tool parameters
+ *
+ * @see {@link https://developer.android.com/studio/command-line|Android CLI Reference}
+ * @see {@link https://developer.android.com/studio/command-line/adb|ADB Documentation}
  */
 export function createAndroidTools(globalProcessMap: Map<string, number>): Map<string, any> {
   // Initialize local emulator tracking if not provided

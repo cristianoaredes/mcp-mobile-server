@@ -1,6 +1,6 @@
 # 🔧 Tools Reference
 
-This document provides detailed information about all 19 essential tools available in the MCP Mobile Server.
+This document provides detailed information about all 36 tools available in the MCP Mobile Server.
 
 ---
 
@@ -100,7 +100,7 @@ List connected Android devices and emulators with fallback to native-run.
 
 ---
 
-## 📱 Device Management (4)
+## 📱 Device Management (9)
 
 ### `native_run_list_devices`
 **Platform:** Cross-platform  
@@ -170,6 +170,124 @@ List available Android Virtual Devices (AVDs).
 ```
 
 **Output:** AVD names, status, and configuration details.
+
+---
+
+### `android_create_avd`
+**Platform:** Android
+**Dependencies:** avdmanager
+**Safe for Testing:** ❌ No (creates system files)
+
+Create new Android Virtual Devices (AVDs) for testing different Android configurations.
+
+```json
+{
+  "name": "Pixel_5_API_33",
+  "device": "pixel_5",
+  "systemImage": "system-images;android-33;google_apis;x86_64",
+  "sdcard": "512M",
+  "force": false
+}
+```
+
+**Features:**
+- Custom device configurations
+- Multiple Android API levels
+- SD card size configuration
+- Force overwrite existing AVDs
+
+---
+
+### `android_start_emulator`
+**Platform:** Android
+**Dependencies:** Android Emulator
+**Safe for Testing:** ❌ No (starts processes)
+
+Start Android emulators with custom configuration options.
+
+```json
+{
+  "avdName": "Pixel_5_API_33",
+  "noWindow": false,
+  "port": 5554,
+  "gpu": "auto",
+  "wipeData": false
+}
+```
+
+**GPU Options:**
+- `auto` - Automatic selection
+- `host` - Use host GPU
+- `swiftshader_indirect` - Software rendering
+- `guest` - Use emulated GPU
+
+**Features:**
+- Headless mode support (`noWindow: true`)
+- Custom port assignment
+- Fresh start with `wipeData: true`
+- Background execution
+
+---
+
+### `android_stop_emulator`
+**Platform:** Android
+**Dependencies:** ADB
+**Safe for Testing:** ❌ No (stops processes)
+
+Gracefully stop running Android emulators.
+
+```json
+{
+  "deviceId": "emulator-5554"
+}
+```
+
+**Features:**
+- Safe shutdown process
+- Automatic device ID detection
+- State preservation
+
+---
+
+### `ios_shutdown_simulator`
+**Platform:** iOS (macOS only)
+**Dependencies:** Xcode Command Line Tools
+**Safe for Testing:** ❌ No (stops processes)
+
+Shutdown iOS simulators cleanly.
+
+```json
+{
+  "udid": "A1B2C3D4-E5F6-7890-ABCD-EF1234567890"
+}
+```
+
+**Features:**
+- Clean shutdown process
+- Automatic UDID resolution
+- All simulators shutdown if no UDID provided
+
+---
+
+### `flutter_launch_emulator`
+**Platform:** Flutter
+**Dependencies:** Flutter SDK
+**Safe for Testing:** ❌ No (starts processes)
+
+Launch emulators using Flutter's emulator management.
+
+```json
+{
+  "emulatorId": "Pixel_5_API_33",
+  "coldBoot": false
+}
+```
+
+**Features:**
+- Cross-platform (Android/iOS)
+- Automatic emulator selection
+- Cold boot option for fresh state
+- Integration with Flutter workflow
 
 ---
 
@@ -396,20 +514,392 @@ Take screenshots of iOS simulators.
 
 ---
 
+## 🚀 Super-Tools (10)
+
+### `flutter_dev_session`
+**Platform:** Flutter
+**Dependencies:** Flutter SDK
+**Safe for Testing:** ❌ No (comprehensive workflow)
+
+Complete Flutter development session workflow - from environment check to running app with hot reload.
+
+```json
+{
+  "cwd": "/path/to/flutter/project",
+  "target": "lib/main.dart",
+  "preferPhysical": true
+}
+```
+
+**Workflow Steps:**
+1. Run `flutter doctor` to verify environment
+2. List available devices
+3. Smart device selection (physical vs emulator)
+4. Auto-start emulator if no devices available
+5. Launch app with hot reload
+
+**Perfect for:** Starting a development session with a single command.
+
+---
+
+### `flutter_test_suite`
+**Platform:** Flutter
+**Dependencies:** Flutter SDK
+**Safe for Testing:** ❌ No (runs all tests)
+
+Execute complete test suite including unit tests, widget tests, and integration tests with coverage reporting.
+
+```json
+{
+  "cwd": "/path/to/flutter/project",
+  "coverage": true,
+  "integrationTests": false
+}
+```
+
+**Test Categories:**
+- **Unit Tests** - Business logic validation
+- **Widget Tests** - UI component testing
+- **Integration Tests** - End-to-end workflows
+- **Coverage Report** - Code coverage metrics
+
+**Output:**
+- Test results for each category
+- Coverage percentage
+- Failed test details
+- Performance metrics
+
+---
+
+### `flutter_release_build`
+**Platform:** Flutter
+**Dependencies:** Flutter SDK, Gradle, Xcode
+**Safe for Testing:** ❌ No (long-running builds)
+
+Build production-ready releases for all target platforms with optimizations and signing.
+
+```json
+{
+  "cwd": "/path/to/flutter/project",
+  "platforms": ["android", "ios", "web"],
+  "buildNumber": "123",
+  "buildName": "1.2.3",
+  "obfuscate": true,
+  "splitDebugInfo": "./debug-symbols/"
+}
+```
+
+**Build Targets:**
+- **Android**: APK and AAB (App Bundle)
+- **iOS**: IPA with signing
+- **Web**: Optimized web build
+- **Desktop**: Windows, macOS, Linux
+
+**Features:**
+- Code obfuscation for security
+- Split debug info for crash reporting
+- Custom build numbers and names
+- Parallel platform builds
+
+---
+
+### `mobile_device_manager`
+**Platform:** Cross-platform
+**Dependencies:** Flutter SDK
+**Safe for Testing:** ✅ Yes (read-only)
+
+Smart device management across all platforms with intelligent recommendations.
+
+```json
+{
+  "action": "list", // or "recommend", "autostart"
+  "platform": "all", // or "android", "ios"
+  "includeEmulators": true
+}
+```
+
+**Actions:**
+- **list** - Show all connected devices and emulators
+- **recommend** - Suggest best device for development
+- **autostart** - Launch recommended emulator if none available
+
+**Recommendations Based On:**
+- Device type (physical vs emulator)
+- Platform support
+- Device specifications
+- Current availability
+
+---
+
+### `flutter_performance_profile`
+**Platform:** Flutter
+**Dependencies:** Flutter SDK
+**Safe for Testing:** ❌ No (resource intensive)
+
+Run app in profile mode with Flutter DevTools for comprehensive performance analysis.
+
+```json
+{
+  "cwd": "/path/to/flutter/project",
+  "deviceId": "chrome",
+  "enableTimeline": true,
+  "enableMemoryProfiling": true
+}
+```
+
+**Profiling Metrics:**
+- **CPU** - Frame rendering performance
+- **Memory** - Heap usage and leaks
+- **Network** - API call performance
+- **Timeline** - Event tracing
+
+**DevTools Features:**
+- Widget rebuild analysis
+- Paint operations
+- Layout performance
+- Animation smoothness
+
+---
+
+### `flutter_deploy_pipeline`
+**Platform:** Flutter
+**Dependencies:** Flutter SDK
+**Safe for Testing:** ❌ No (deployment workflow)
+
+Complete deployment pipeline from clean build to store preparation.
+
+```json
+{
+  "cwd": "/path/to/flutter/project",
+  "platforms": ["android", "ios"],
+  "generateChangelog": true,
+  "runTests": true,
+  "createReleaseNotes": true
+}
+```
+
+**Pipeline Steps:**
+1. `flutter clean` - Remove old artifacts
+2. `flutter pub get` - Update dependencies
+3. `flutter test` - Run test suite
+4. `flutter build` - Create release builds
+5. Generate changelog from git commits
+6. Create release notes template
+7. Prepare store submission assets
+
+**Perfect for:** Automating the entire release process.
+
+---
+
+### `flutter_fix_common_issues`
+**Platform:** Flutter
+**Dependencies:** Flutter SDK
+**Safe for Testing:** ❌ No (modifies project)
+
+Automatically detect and fix common Flutter development issues.
+
+```json
+{
+  "cwd": "/path/to/flutter/project",
+  "issues": ["cache", "dependencies", "pods", "gradle"]
+}
+```
+
+**Auto-Fix Issues:**
+- **cache** - Clear Flutter cache and rebuild
+- **dependencies** - Fix pubspec.lock conflicts
+- **pods** - Clean and reinstall iOS CocoaPods
+- **gradle** - Sync and repair Gradle configuration
+
+**Common Fixes:**
+```bash
+# Cache issues
+flutter clean
+flutter pub get
+
+# iOS pod issues
+cd ios && pod deintegrate && pod install
+
+# Gradle issues
+cd android && ./gradlew clean
+```
+
+---
+
+### `android_full_debug`
+**Platform:** Android
+**Dependencies:** ADB
+**Safe for Testing:** ❌ No (comprehensive debugging)
+
+Complete Android debugging toolkit with logs, screenshots, and system information.
+
+```json
+{
+  "deviceId": "emulator-5554",
+  "captureLogs": true,
+  "captureScreenshot": true,
+  "dumpSystemInfo": true,
+  "duration": 30000
+}
+```
+
+**Debug Information:**
+- **Logcat** - Real-time application logs
+- **Screenshot** - Current device screen
+- **System Info** - Device specs and status
+- **App Permissions** - Runtime permissions
+- **Network State** - Connectivity status
+- **Battery State** - Power and charging info
+
+---
+
+### `ios_simulator_manager`
+**Platform:** iOS (macOS only)
+**Dependencies:** Xcode Command Line Tools
+**Safe for Testing:** ❌ No (manages simulators)
+
+Smart iOS simulator management with recommendations and state cleanup.
+
+```json
+{
+  "action": "list", // or "recommend", "boot", "clean"
+  "deviceType": "iPhone 15 Pro",
+  "iosVersion": "17.0"
+}
+```
+
+**Actions:**
+- **list** - Show all available simulators
+- **recommend** - Suggest best simulator for testing
+- **boot** - Start recommended simulator
+- **clean** - Reset simulator to factory state
+
+**Recommendations Consider:**
+- Latest iOS version availability
+- Device type popularity
+- Screen size and resolution
+- Current boot status
+
+---
+
+### `flutter_inspector_session`
+**Platform:** Flutter
+**Dependencies:** Flutter SDK
+**Safe for Testing:** ❌ No (runs app with inspector)
+
+Launch Flutter app with Inspector and DevTools for widget tree analysis.
+
+```json
+{
+  "cwd": "/path/to/flutter/project",
+  "deviceId": "chrome",
+  "enableInspector": true,
+  "enablePerformanceOverlay": true
+}
+```
+
+**Inspector Features:**
+- **Widget Tree** - Visual widget hierarchy
+- **Render Tree** - Layout information
+- **Performance Overlay** - FPS and frame timing
+- **Debug Paint** - Layout boundaries
+- **Size Information** - Widget dimensions
+
+**Perfect for:** UI debugging and layout optimization.
+
+---
+
+## ⚙️ Setup & Configuration Tools (2)
+
+### `flutter_setup_environment`
+**Platform:** Cross-platform
+**Dependencies:** None (bootstraps Flutter)
+**Safe for Testing:** ✅ Yes (environment setup)
+
+Automated Flutter SDK installation and environment configuration with PATH setup.
+
+```json
+{
+  "action": "check", // or "install", "configure", "full"
+  "installPath": "/usr/local/flutter",
+  "updateShellConfig": true
+}
+```
+
+**Actions:**
+- **check** - Verify Flutter installation
+- **install** - Download and install Flutter SDK
+- **configure** - Set up PATH and environment variables
+- **full** - Complete setup (check → install → configure)
+
+**Configuration:**
+- Adds Flutter to system PATH
+- Updates shell profile (.bashrc, .zshrc)
+- Configures Git for Flutter
+- Runs initial `flutter doctor`
+
+**Platform-Specific Paths:**
+- **macOS**: `/Users/$USER/flutter`
+- **Linux**: `/home/$USER/flutter`
+- **Windows**: `C:\flutter`
+
+---
+
+### `android_sdk_setup`
+**Platform:** Android
+**Dependencies:** None (bootstraps Android SDK)
+**Safe for Testing:** ✅ Yes (environment setup)
+
+Setup Android SDK and configure environment for Android development.
+
+```json
+{
+  "action": "check", // or "install", "configure"
+  "components": ["platform-tools", "build-tools", "platforms;android-33"],
+  "acceptLicenses": true
+}
+```
+
+**SDK Components:**
+- **platform-tools** - ADB and fastboot
+- **build-tools** - AAPT, dx, zipalign
+- **platforms** - Android API levels
+- **system-images** - Emulator images
+
+**Environment Variables:**
+- `ANDROID_HOME` or `ANDROID_SDK_ROOT`
+- `PATH` updates for platform-tools
+- Java JDK configuration
+
+**Perfect for:** First-time Android development setup.
+
+---
+
 ## 🔧 Tool Categories
 
-### Essential Tools
-All 19 tools are categorized as **Essential** for focused, reliable functionality:
+All 36 tools are categorized by functionality and complexity:
 
-- ✅ **Stable** - Well-tested and reliable
-- ✅ **Useful** - Covers core mobile development needs
-- ✅ **Safe** - Minimal risk of system issues
-- ✅ **Fast** - Quick execution times
-- ✅ **Cross-platform** - Works on macOS, Windows, Linux
+### Core Tools (5)
+Essential diagnostic and environment checking tools that are safe to run anytime.
 
-### Removed Tool Categories
-- **Dependent** - Complex tools requiring extensive setup
-- **Optional** - Nice-to-have features that often fail
+### Device Management (9)
+Tools for discovering, creating, starting, and stopping devices and emulators across platforms.
+
+### Development Workflow (6)
+Primary development tools for building, testing, and running applications.
+
+### Utility Tools (4)
+Helper tools for debugging, logging, and capturing device state.
+
+### Super-Tools (10)
+Advanced workflow automation that combines multiple operations into intelligent pipelines. These tools provide:
+- ✅ **Complete Workflows** - Multi-step automation
+- ✅ **Smart Logic** - Intelligent decision making
+- ✅ **Time Saving** - Reduce manual steps
+- ✅ **Best Practices** - Industry-standard processes
+
+### Setup & Configuration (2)
+Bootstrap tools for installing and configuring development environments from scratch.
 
 ---
 
@@ -418,31 +908,37 @@ All 19 tools are categorized as **Essential** for focused, reliable functionalit
 | Tool Category | Average Duration | Timeout | Safety |
 |---------------|------------------|---------|---------|
 | **Core Tools** | 1-8 seconds | 10-30s | ✅ Safe |
-| **Device Management** | 1-20 seconds | 15-120s | ⚠️ Device changes |
+| **Device Management** | 1-60 seconds | 15-180s | ⚠️ Device changes |
 | **Development** | 10s-10 minutes | 60-600s | ⚠️ Long running |
 | **Utilities** | 3-30 seconds | 20-60s | ⚠️ File operations |
+| **Super-Tools** | 30s-30 minutes | 300-1800s | ⚠️ Complex workflows |
+| **Setup Tools** | 5s-10 minutes | 600s | ✅ Environment setup |
 
 ---
 
 ## 🛡️ Security & Safety
 
 ### Safe for Testing ✅
-These tools can be run safely without side effects:
+These tools can be run safely without side effects (read-only):
 - `health_check`
 - `flutter_doctor`
-- `flutter_version`  
+- `flutter_version`
 - `flutter_list_devices`
 - `android_list_devices`
 - `native_run_list_devices`
 - `ios_list_simulators`
 - `android_list_emulators`
+- `mobile_device_manager` (with action="list")
+- `flutter_setup_environment` (with action="check")
+- `android_sdk_setup` (with action="check")
 
 ### Use with Caution ⚠️
-These tools modify system state or run long processes:
-- All installation tools
-- Build and test operations
-- File creation tools
-- Device management tools
+These tools modify system state, run long processes, or consume significant resources:
+- **Device Management** - Start/stop emulators and simulators
+- **Development Workflow** - Build, test, and run operations
+- **Utilities** - File creation (screenshots) and logging
+- **Super-Tools** - Complex multi-step workflows
+- **Setup Tools** - System-wide environment changes (when installing)
 
 ---
 

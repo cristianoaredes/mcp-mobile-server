@@ -1,0 +1,74 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "MCP Mobile Server API Documentation",
+  "entryPoints": [
+    "src/tools/flutter.ts",
+    "src/tools/android.ts",
+    "src/tools/ios.ts",
+    "src/tools/super-tools.ts",
+    "src/tools/setup-tools.ts",
+    "src/tools/android/gradle.ts",
+    "src/tools/android/lint.ts",
+    "src/tools/android/media.ts",
+    "src/tools/android/native-run.ts"
+  ],
+  "entryPointStrategy": "expand",
+  "out": "docs/api",
+  "exclude": [
+    "**/*+(test|spec).ts",
+    "**/node_modules/**",
+    "**/dist/**"
+  ],
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeInternal": false,
+  "includeVersion": true,
+  "disableSources": false,
+  "sourceLinkTemplate": "https://github.com/cristianoaredes/mcp-mobile-server/blob/{gitRevision}/{path}#L{line}",
+  "theme": "default",
+  "navigation": {
+    "includeCategories": true,
+    "includeGroups": true,
+    "includeFolders": true
+  },
+  "categorizeByGroup": true,
+  "categoryOrder": [
+    "Core Tools",
+    "Super-Tools",
+    "Setup & Configuration",
+    "Device Management",
+    "Development Workflow",
+    "Utilities",
+    "*"
+  ],
+  "sort": ["source-order"],
+  "visibilityFilters": {
+    "protected": false,
+    "private": false,
+    "inherited": true,
+    "external": false
+  },
+  "searchInComments": true,
+  "cleanOutputDir": true,
+  "titleLink": "https://github.com/cristianoaredes/mcp-mobile-server",
+  "navigationLinks": {
+    "GitHub": "https://github.com/cristianoaredes/mcp-mobile-server",
+    "Documentation": "https://github.com/cristianoaredes/mcp-mobile-server/tree/main/docs",
+    "npm": "https://www.npmjs.com/package/@cristianoaredes/mcp-mobile-server"
+  },
+  "sidebarLinks": {
+    "Quick Start": "https://github.com/cristianoaredes/mcp-mobile-server/blob/main/docs/QUICK_START.md",
+    "Architecture": "https://github.com/cristianoaredes/mcp-mobile-server/blob/main/docs/ARCHITECTURE.md",
+    "CI/CD Guide": "https://github.com/cristianoaredes/mcp-mobile-server/blob/main/docs/guides/CI_CD_INTEGRATION.md"
+  },
+  "readme": "docs/API.md",
+  "plugin": [],
+  "lightHighlightTheme": "light-plus",
+  "darkHighlightTheme": "dark-plus",
+  "customCss": "./docs/typedoc-custom.css",
+  "basePath": ".",
+  "emit": "both",
+  "compilerOptions": {
+    "skipLibCheck": true
+  }
+}
