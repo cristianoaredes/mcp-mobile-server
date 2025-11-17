@@ -43,6 +43,9 @@ temp/
 *.swp
 *.swo
 
+# Generated documentation
+docs/api/
+
 # Archives from npm pack
 *.tgz
 
