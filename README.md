@@ -1,91 +1,116 @@
-# 🚀 MCP Mobile Server
+# MCP Mobile Server — AI-Powered Mobile Development for Android, iOS, and Flutter
 
 <div align="center">
-  <img src="https://img.shields.io/badge/MCP-Mobile_Development-00D9FF?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Im0xMiAzLTEuOSA3aDQuMnptMCAwdjE4bDggNS4yLTEyIDEuOXoiLz48L3N2Zz4=" alt="MCP Server">
-  
-  <h3>Supercharge Your Mobile Development with AI-Powered Tools</h3>
-  
-  <p>
-    <a href="https://www.npmjs.com/package/@cristianoaredes/mcp-mobile-server"><img src="https://img.shields.io/npm/v/@cristianoaredes/mcp-mobile-server.svg?style=flat-square&label=npm&color=CB3837" alt="NPM Version"></a>
-    <a href="https://github.com/cristianoaredes/mcp-mobile-server/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License"></a>
-    <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-1.0-green.svg?style=flat-square" alt="MCP Compatible"></a>
-    <img src="https://img.shields.io/badge/platforms-Android%20|%20iOS%20|%20Flutter-orange.svg?style=flat-square" alt="Platforms">
-    <img src="https://img.shields.io/badge/tools-36-brightgreen.svg?style=flat-square" alt="Tools">
-  </p>
 
-  <p>
-    <strong>36 powerful tools</strong> for mobile development • <strong>10 intelligent super-tools</strong> • <strong>Cross-platform support</strong>
-  </p>
+<a href="https://www.npmjs.com/package/@cristianoaredes/mcp-mobile-server"><img src="https://img.shields.io/npm/v/@cristianoaredes/mcp-mobile-server.svg?style=flat-square&label=npm&color=CB3837" alt="NPM Version"></a>
+<a href="https://github.com/cristianoaredes/mcp-mobile-server/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="License: MIT"></a>
+<a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-compatible-green.svg?style=flat-square" alt="MCP Compatible"></a>
+<img src="https://img.shields.io/badge/platforms-Android%20%7C%20iOS%20%7C%20Flutter-orange.svg?style=flat-square" alt="Platforms: Android | iOS | Flutter">
+<img src="https://img.shields.io/badge/tools-36-brightgreen.svg?style=flat-square" alt="36 Tools">
+<img src="https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg?style=flat-square" alt="Node.js 18+">
+
+**36 tools for mobile development automation, ready to use inside Claude Desktop and any MCP-compatible AI client.**
+
+by [Cristiano Arêdes](https://github.com/cristianoaredes)
+
 </div>
 
 ---
 
-## 🌟 Why MCP Mobile Server?
+## What is this?
 
-MCP Mobile Server transforms your AI assistant into a **mobile development powerhouse**. Whether you're building with Flutter, developing for iOS, or creating Android apps, this server provides seamless integration with Claude Desktop, Windsurf, and other MCP-compatible clients.
+MCP Mobile Server is a [Model Context Protocol](https://modelcontextprotocol.io) server that gives AI assistants direct, structured access to your mobile development toolchain. It bridges Claude Desktop (and other MCP clients) to Flutter, Android SDK, and iOS/Xcode workflows through 36 typed tools and 10 high-level "super-tools" that orchestrate complete multi-step workflows.
 
-### ✨ Key Features
+Instead of switching between terminals and docs, you describe what you want in natural language and the server executes the right commands — with validation, error handling, and fallback strategies built in.
 
-<table>
-<tr>
-<td width="50%">
-
-**🎯 Intelligent Automation**
-- Smart device selection and management
-- Automated environment setup
-- Self-healing build processes
-- Intelligent error resolution
-
-</td>
-<td width="50%">
-
-**⚡ Developer Productivity**
-- Hot reload development sessions
-- One-command deployments
-- Parallel testing across devices
-- Automated dependency management
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-**🔧 Complete Toolchain**
-- Flutter, Android, and iOS tools
-- Emulator and simulator control
-- Build and test automation
-- Performance profiling
-
-</td>
-<td width="50%">
-
-**🤖 AI-First Design**
-- Built for Claude Desktop
-- Natural language commands
-- Context-aware suggestions
-- Workflow optimization
-
-</td>
-</tr>
-</table>
+**Supported platforms:** Android · iOS · Flutter · macOS · Linux · Windows (partial)
 
 ---
 
-## 🚀 Quick Start
+## Features
 
-### Installation
+| Category | Tools | What you can do |
+|---|---|---|
+| **Core / Health** | 5 | Environment diagnostics, Flutter doctor, device discovery |
+| **Device Management** | 9 | List, create, start, and stop Android emulators and iOS simulators |
+| **Flutter Development** | 6 | Hot reload sessions, builds, tests, dependency management |
+| **Utilities** | 4 | Logcat, screenshots, simulator boot/shutdown |
+| **Setup & Configuration** | 2 | Automated Flutter and Android SDK environment setup |
+| **Super-Tools (workflows)** | 10 | Complete end-to-end workflows combining multiple atomic tools |
+
+### Super-Tools — complete workflows in one call
+
+| Tool | What it does |
+|---|---|
+| `flutter_dev_session` | Selects best available device, runs doctor, starts hot reload — one command |
+| `flutter_test_suite` | Unit + widget + integration tests with coverage reporting |
+| `flutter_release_build` | Multi-platform release builds (APK, App Bundle, IPA) |
+| `flutter_deploy_pipeline` | End-to-end: test → build → sign |
+| `flutter_fix_common_issues` | Diagnoses and auto-fixes common Flutter build errors |
+| `flutter_inspector_session` | Widget inspection session |
+| `mobile_device_manager` | Intelligent device orchestration across platforms |
+| `android_full_debug` | Device selection → APK install → launch → logcat in one step |
+| `android_emulator_workflow` | AVD create → start → wait → ready |
+| `ios_simulator_manager` | Boot → wait → ready → screenshot lifecycle management |
+
+### Security built in
+
+- All shell commands are validated against an allowlist before execution
+- Dangerous pattern detection blocks injection attempts
+- Path traversal protection on all file arguments
+- Runtime input validation via [Zod](https://zod.dev)
+- Configurable timeouts on long-running processes
+
+---
+
+## Requirements
+
+| Requirement | Version |
+|---|---|
+| Node.js | 18.0.0 or later |
+| npm or yarn | any recent version |
+| Flutter SDK | 3.0+ (for Flutter tools) |
+| Android SDK / Android Studio | any recent (for Android tools) |
+| Xcode | 14+ on macOS (for iOS tools) |
+
+You only need the SDKs for the platforms you work on. The server starts and serves tools even when some SDKs are absent.
+
+---
+
+## Installation
+
+### Option 1 — Run with npx (no install needed)
 
 ```bash
-# Install globally
-npm install -g @cristianoaredes/mcp-mobile-server
-
-# Or run directly with npx
 npx @cristianoaredes/mcp-mobile-server
 ```
 
-### Claude Desktop Integration
+### Option 2 — Install globally
 
-Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+```bash
+npm install -g @cristianoaredes/mcp-mobile-server
+mcp-mobile-server
+```
+
+### Option 3 — Build from source
+
+```bash
+git clone https://github.com/cristianoaredes/mcp-mobile-server.git
+cd mcp-mobile-server
+npm install
+npm run build
+npm start
+```
+
+---
+
+## Claude Desktop Setup
+
+Add the server to your Claude Desktop configuration file:
+
+**macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`  
+**Windows:** `%APPDATA%\Claude\claude_desktop_config.json`  
+**Linux:** `~/.config/Claude/claude_desktop_config.json`
 
 ```json
 {
@@ -98,269 +123,159 @@ Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/
 }
 ```
 
-### First Steps
+Restart Claude Desktop after saving. The 36 mobile development tools will appear automatically.
+
+---
+
+## Usage Examples
+
+### Check your environment
+
+```
+Use the health_check tool to verify the mobile development server is working
+```
+
+```
+Run flutter_doctor to check my Flutter setup
+```
+
+### Work with devices
+
+```
+List all connected Android devices and iOS simulators
+```
+
+```
+Start a Flutter development session with hot reload on the best available device
+```
+
+### Build and test
+
+```
+Run the full test suite for my Flutter project at /path/to/project
+```
+
+```
+Build release versions for Android and iOS
+```
+
+### Fix build problems
+
+```
+My Flutter app won't build. Use flutter_fix_common_issues to diagnose and fix it.
+```
+
+### Validate the installation from the command line
 
 ```bash
-# Check your environment
-mcp-mobile-server health_check
+# After building from source:
+npm run mcp:validate
 
-# Setup Flutter automatically
-mcp-mobile-server flutter_setup_environment --action=full
-
-# Start developing
-mcp-mobile-server flutter_dev_session --cwd=/path/to/project
+# Expected output:
+# ✅ Server configuration is valid
+# ✅ 36 tools registered
 ```
 
 ---
 
-## 🛠️ Available Tools
+## Project Structure
 
-### 🚀 Super Tools - Complete Workflows
+```
+src/
+  server.ts          # MCP server entry point
+  tools/
+    android.ts       # Android SDK tools
+    ios.ts           # iOS / Xcode / Simulator tools
+    flutter.ts       # Flutter SDK tools
+    super-tools.ts   # High-level workflow automation
+    setup-tools.ts   # Environment setup tools
+  utils/
+    process.ts       # Process execution and tracking
+    security.ts      # Command validation and sandboxing
+    fallbacks.ts     # Fallback strategies (ADB → native-run, etc.)
+    tool-categories.ts # Tool registry
+```
 
-These intelligent tools combine multiple operations for maximum productivity:
-
-| Tool | Description | Example Use Case |
-|------|-------------|------------------|
-| `flutter_dev_session` | Complete dev environment with hot reload | Start coding immediately with best device auto-selected |
-| `flutter_test_suite` | Run all tests with coverage analysis | CI/CD pipeline integration |
-| `flutter_release_build` | Multi-platform release builds | Deploy to stores with one command |
-| `mobile_device_manager` | Intelligent device orchestration | Auto-start best available device |
-| `flutter_fix_common_issues` | Auto-fix common problems | Resolve build errors automatically |
-
-<details>
-<summary><b>View All 36 Tools</b> (click to expand)</summary>
-
-### 🔧 Core Tools (5)
-- `health_check` - System diagnostics and environment validation
-- `flutter_doctor` - Flutter environment verification
-- `flutter_version` - SDK version management
-- `flutter_list_devices` - Device discovery
-- `android_list_devices` - Android device detection
-
-### 📱 Device Management (9)
-- `native_run_list_devices` - Universal device listing
-- `native_run_install_app` - Cross-platform app installation
-- `ios_list_simulators` - iOS simulator discovery
-- `android_list_emulators` - AVD management
-- `android_create_avd` - Virtual device creation
-- `android_start_emulator` - Emulator lifecycle
-- `android_stop_emulator` - Resource management
-- `ios_shutdown_simulator` - iOS cleanup
-- `flutter_launch_emulator` - Quick emulator start
-
-### ⚡ Development (6)
-- `flutter_run` - Hot reload server
-- `flutter_build` - Production builds
-- `flutter_test` - Test runner
-- `flutter_clean` - Cache management
-- `flutter_pub_get` - Dependencies
-- `android_install_apk` - APK deployment
-
-### 🛠️ Utilities (4)
-- `android_logcat` - Debug logging
-- `android_screenshot` - Screen capture
-- `ios_boot_simulator` - iOS startup
-- `ios_take_screenshot` - iOS capture
-
-### 🔧 Setup Tools (2)
-- `flutter_setup_environment` - Automated Flutter setup
-- `android_sdk_setup` - Android SDK configuration
-
-### 🚀 Advanced Workflows (10)
-- `flutter_performance_profile` - Performance analysis
-- `flutter_deploy_pipeline` - Full deployment
-- `android_full_debug` - Complete debugging
-- `ios_simulator_manager` - iOS orchestration
-- `flutter_inspector_session` - Widget inspection
-
-</details>
+The server communicates over stdio using JSON-RPC 2.0, the standard MCP transport.
 
 ---
 
-## 💡 Real-World Examples
-
-### Example 1: Start a Flutter Project
-```typescript
-// Claude Desktop conversation
-User: "Create a new Flutter app and run it"
-Claude: I'll create a new Flutter app and start the development server.
-
-// Behind the scenes:
-flutter_create({ name: "my_app", org: "com.example" })
-flutter_dev_session({ cwd: "./my_app", preferPhysical: true })
-```
-
-### Example 2: Fix Build Errors
-```typescript
-// Automatic error resolution
-User: "My Flutter app won't build"
-Claude: Let me diagnose and fix the build issues.
-
-// Executes:
-flutter_fix_common_issues({ cwd: ".", deep: true })
-```
-
-### Example 3: Deploy to Multiple Platforms
-```typescript
-// One-command deployment
-User: "Build release versions for Android and iOS"
-Claude: I'll create optimized release builds for both platforms.
-
-// Runs:
-flutter_release_build({ 
-  cwd: ".",
-  platforms: ["apk", "appbundle", "ipa"],
-  obfuscate: true
-})
-```
-
----
-
-## 🏗️ Architecture
-
-```mermaid
-graph TD
-    A[Claude Desktop / MCP Client] -->|JSON-RPC| B[MCP Mobile Server]
-    B --> C[Tool Registry]
-    B --> D[Process Manager]
-    B --> E[Security Layer]
-    
-    C --> F[Flutter Tools]
-    C --> G[Android Tools]
-    C --> H[iOS Tools]
-    C --> I[Super Tools]
-    
-    F --> J[Flutter SDK]
-    G --> K[Android SDK]
-    H --> L[Xcode]
-```
-
-### Design Principles
-
-- **🔒 Security First**: All commands validated and sandboxed
-- **⚡ Performance**: Parallel execution and intelligent caching
-- **🎯 Reliability**: Automatic retries and fallback strategies
-- **📦 Modular**: Extensible plugin architecture
-- **🌍 Cross-Platform**: Works on macOS, Linux, and Windows
-
----
-
-## 📋 Requirements
-
-### Minimum Requirements
-- **Node.js** 18.0+
-- **npm** or **yarn**
-- One of: Flutter, Android SDK, or Xcode
-
-### Recommended Setup
-- **Flutter** 3.0+ for Flutter development
-- **Android Studio** or **Android SDK** for Android
-- **Xcode** 14+ for iOS (macOS only)
-- **VS Code** with Flutter extension
-
----
-
-## 🤝 Contributing
-
-We welcome contributions! See our [Contributing Guide](./docs/CONTRIBUTING.md) for details.
-
-### Development Setup
+## Contributing
 
 ```bash
-# Clone the repository
+# Clone and install
 git clone https://github.com/cristianoaredes/mcp-mobile-server.git
-
-# Install dependencies
 cd mcp-mobile-server
 npm install
 
-# Run in development mode
+# Run in development mode (watch)
 npm run dev
 
 # Run tests
 npm test
+
+# Run linter and full CI check
+npm run ci
 ```
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines and [docs/](./docs/) for the full documentation set.
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 | Resource | Description |
-|----------|-------------|
-| [📖 **Full Documentation**](./docs/) | Complete guide and API reference |
-| [🚀 **Quick Start Guide**](./docs/QUICK_START.md) | Get running in 5 minutes |
-| [🔧 **Troubleshooting**](./docs/TROUBLESHOOTING.md) | Common issues and solutions |
-| [🛠️ **Tool Reference**](./docs/TOOLS.md) | Detailed tool documentation |
-| [🏗️ **Architecture**](./docs/ARCHITECTURE.md) | System design and internals |
+|---|---|
+| [Quick Start Guide](./docs/QUICK_START.md) | Get running in under 5 minutes |
+| [Tools Reference](./docs/TOOLS.md) | All 36 tools with parameters and examples |
+| [Architecture](./docs/ARCHITECTURE.md) | System design, security layer, and ADRs |
+| [Android Workflow](./docs/examples/android-workflow.md) | Android development guide |
+| [iOS Workflow](./docs/examples/ios-workflow.md) | iOS development guide |
+| [Flutter Workflow](./docs/examples/flutter-workflow.md) | Flutter development guide |
+| [Troubleshooting](./docs/TROUBLESHOOTING.md) | Common issues and solutions |
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
-<details>
-<summary><b>Common Issues</b></summary>
-
-### Flutter not found
+**Flutter not found**
 ```bash
-# Run the setup tool
-mcp-mobile-server flutter_setup_environment --action=full
+# Run the automated setup tool
+# In Claude Desktop: "Use flutter_setup_environment to install Flutter"
 ```
 
-### Android SDK not configured
+**Android SDK not configured**
 ```bash
-# Configure Android environment
-mcp-mobile-server android_sdk_setup --action=configure
+# In Claude Desktop: "Use android_sdk_setup to configure Android"
 ```
 
-### Permission denied errors
+**No devices available**
 ```bash
-# Check permissions
-ls -la $(which mcp-mobile-server)
-chmod +x $(which mcp-mobile-server)
+# List what's available
+# "Use android_list_emulators and ios_list_simulators to see available devices"
+
+# Or start a new one
+# "Use android_start_emulator to launch an Android emulator"
 ```
 
-</details>
+**Claude Desktop not recognizing the server**
+1. Verify the config file path is correct for your OS
+2. Check the JSON is valid (no trailing commas)
+3. Restart Claude Desktop completely
+4. Ask Claude: "Use health_check to verify the mobile server"
 
 ---
 
-## 📊 Project Status
+## License
 
-| Aspect | Status |
-|--------|--------|
-| **Version** | 2.1.0 |
-| **Stability** | Beta |
-| **Tools** | 36 active |
-| **Test Coverage** | 78% |
-| **Platform Support** | macOS ✅ Linux ✅ Windows ⚠️ |
-
----
-
-## 📄 License
-
-MIT License - see [LICENSE](./LICENSE) for details.
-
----
-
-## 🙏 Acknowledgments
-
-- [Model Context Protocol](https://modelcontextprotocol.io) by Anthropic
-- [Flutter](https://flutter.dev) team for the amazing framework
-- All contributors and users of this project
+[MIT](./LICENSE) — free to use, modify, and distribute.
 
 ---
 
 <div align="center">
 
-### 🌟 Support the Project
+[![GitHub Stars](https://img.shields.io/github/stars/cristianoaredes/mcp-mobile-server?style=social)](https://github.com/cristianoaredes/mcp-mobile-server)
 
-If you find this useful, please consider:
-
-[![Star on GitHub](https://img.shields.io/github/stars/cristianoaredes/mcp-mobile-server?style=social)](https://github.com/cristianoaredes/mcp-mobile-server)
-[![Follow on Twitter](https://img.shields.io/twitter/follow/cristianoaredes?style=social)](https://twitter.com/cristianoaredes)
-[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Support-yellow?style=flat&logo=buy-me-a-coffee)](https://buymeacoffee.com/cristianoaredes)
-
-**Built with ❤️ for the mobile development community**
-
-[Report Bug](https://github.com/cristianoaredes/mcp-mobile-server/issues) • [Request Feature](https://github.com/cristianoaredes/mcp-mobile-server/discussions) • [Documentation](./docs/)
+[Report a Bug](https://github.com/cristianoaredes/mcp-mobile-server/issues) · [Request a Feature](https://github.com/cristianoaredes/mcp-mobile-server/discussions) · [Full Documentation](./docs/)
 
 </div>
